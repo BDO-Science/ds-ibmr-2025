@@ -13,6 +13,7 @@ Repository for IBMR (Individual Based Model - R) runs for 2025 Summer-Fall Habit
 
 * **IBMR_control.model_v2.4_parallel.R**: script for running IBMR in parallel mode 
 * **Delta smelt data functions_v9_2.R**: functions for running IBMR
+* **run_ibmr.R** (this is what I hope our cleaned up script will be named)
 
 ## output
 
