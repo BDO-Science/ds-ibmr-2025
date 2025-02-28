@@ -4,7 +4,7 @@ library(here)
 
 output <- readRDS(here("output/model_outputs/alt1_status-quo_output.rds"))
 lambda<-read.table(here("output/model_outputs/alt1_status-quo_lamAB.txt"),header=T)
-lambdamn<-read.table(here('IBMR/Output/lamABmn_FirstFlush.txt'),header=T)
+lambdamn<-read.table(here("output/model_outputs/alt1_status-quo_lamABmn.txt"),header=T)
 # defined in number 1 of get summaries
 
 lambda_df <- as.data.frame(lambda) %>%
