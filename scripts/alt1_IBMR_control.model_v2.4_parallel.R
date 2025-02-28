@@ -255,6 +255,8 @@ gc()
 # This is what's used by futures
 
 RNGkind("L'Ecuyer-CMRG")
+
+
 ### 5. Run and compile population model ###
 sequential_start <- Sys.time()
 # Loop through sims without parallel processing

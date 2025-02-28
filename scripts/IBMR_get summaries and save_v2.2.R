@@ -42,10 +42,11 @@ lam.mn[8] <- exp(quantile(log(lamAB[3:19,7]),0.025)) # 95% CI
 lam.mn[9] <- exp(quantile(log(lamAB[3:19,7]),0.975))
 
 ### 2. save results ###
-file.save.spot<-c(here('output/model_outputs/'))
-action.name=c('FirstFlush')
+file.save.spot<-(here::here('output/model_outputs'))
+alt.name <- "alt1"
+action.name=c('status-quo')
 
-#write.table(lamAB,file=paste0(file.save.spot,'lamAB_',action.name,'.txt'))
-#write.table(lam.mn,file=paste0(file.save.spot,'lamABmn_',action.name,'.txt'))
-#saveRDS(outz,file=paste0(file.save.spot,'outz_',action.name,'.rds'))
-#saveRDS(outz2,file=paste0(file.save.spot,'outz2_',action.name,'.rds'))
+write.table(lamAB,file=paste0(file.save.spot,"/", alt.name, "_", action.name, "_",'lamAB','.txt'))
+write.table(lam.mn,file=paste0(file.save.spot,"/", alt.name, "_", action.name, "_",'lamABmn','.txt'))
+saveRDS(outz,paste0(file.save.spot, "/", alt.name, "_", action.name, "_", 'output','.rds'))
+# saveRDS(outz2,file=paste0(file.save.spot,'outz2_',action.name,'.rds'))
