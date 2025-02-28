@@ -14,7 +14,10 @@
 ### Set working directory to source file location
 rm(list=ls(all=TRUE))
 # setwd('D:/FWS/R code/Rose BEM/Peterson-Smith-Rose BEM, 2020 revisions/IBMR')
-setwd(here::here("IBMR/"))
+setwd(here::here())
+input_path <- here::here("data/data_raw/demo_inputs")
+action_path <- here::here("data/data_processed/demo_action_inputs")
+
 ### Model parameters ###
 # 1. Calibration
 # 2. Model dimensions
@@ -37,12 +40,12 @@ crash.max <- 2.3e+5 # maximum number of larval production before stopping ('expl
 sims <- 330 # number of simulations to run
 
 ### 3. Load functions and data ###
-source("IBMR_parameters_v2.R")
-source("Delta smelt data functions_v9_2.R") # This loads R libraries and functions to summarize, OMR, smelt distribution, food, and egg survival, v3=observed dist v4=occ predicted dist
-source("IBMR_pop.model_v2.4.R")
-move.matrix<-read.table('Data/move.matrix.12strata_v3.txt') # Load movement rules
+source("scripts/IBMR_parameters_v2.R")
+source("scripts/ds_functions_v9_2.R") # This loads R libraries and functions to summarize, OMR, smelt distribution, food, and egg survival, v3=observed dist v4=occ predicted dist
+source("scripts/IBMR_pop.model_v2.4.R")
+move.matrix<-read.table(file.path(input_path,'move.matrix.12strata_v3.txt')) # Load movement rules
 DOY<-c(15, 45, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # day of year midpoints for each month
-days.in.month<-read.table('Data/days.in.month.txt',header=T)
+days.in.month<-read.table(file.path(input_path, 'days.in.month.txt'),header=T)
 wtr.yr<-c(1,1,1,1,1,1,4,4,2,3,3,1,4,5,4,3,1,3,4,5,5) # Sacto WY type wet = 1, critical = 5
 
 ### 4. Define management actions ###
@@ -60,14 +63,14 @@ Dist.act.array <- M.act.mult <- PD.mult <- secchi.act.array <- Temp.act.array <-
 
 # Load files defining covariates associated with actions
 # OMR
-OMR.act <- read.csv('Action effects/IBMR_OMR_SummerFallX2VOI_input.csv',header=T)
+OMR.act <- read.csv(file.path(action_path,'IBMR_OMR_SummerFallX2VOI_input.csv'),header=T)
 OMR.act <- OMR.act[which(OMR.act==paste0(action)),]
 rownames(OMR.act) <- OMR.act[,2]
 OMR.act <- OMR.act[,3:14]
 #OMR.act[,c(1:8,11:12)] <- NA
 
 # Temp
-Temp.act <- read.table('Action effects/Wetlands_2_hi_temp_temp.txt',header=F)
+Temp.act <- read.table(file.path(action_path,'Wetlands_2_hi_temp_temp.txt'),header=F)
 
 for (y in 1:(n.years+1)) {
 for (m in 1:12) {
@@ -75,20 +78,20 @@ for (m in 1:12) {
  }}
 
 # Secchi
-secchi.act <- read.table('Action effects/AWC_Yolo_secchi.txt',header=F)
+secchi.act <- read.table(file.path(action_path,'AWC_Yolo_secchi.txt'),header=F)
 for (y in 1:(n.years+1)) {
 for (m in 1:12) {
  secchi.act.array[y,m,] <- as.matrix(secchi.act[,(m+(y-1)*12)])
  }}
 
 # X2
-X2.dist.act <- read.csv('Action effects/IBMR_X2_SummerFallX2VOI_input.csv',header=T)
+X2.dist.act <- read.csv(file.path(action_path,'IBMR_X2_SummerFallX2VOI_input.csv'),header=T)
 X2.dist.act <- X2.dist.act[which(X2.dist.act==paste0(action)),]
 rownames(X2.dist.act) <- X2.dist.act[,2]
 X2.target <- X2.dist.act[,3:14]
 
 # Prey
-PD.act <- read.csv('Action effects/zoop_scalar_output_2024-08-01.csv',header=T)
+PD.act <- read.csv(file.path(action_path,'zoop_scalar_output_2024-08-01.csv'),header=T)
 
 PD.act.col <- which(colnames(PD.act)==paste0("sal_",action,"_median"))
 

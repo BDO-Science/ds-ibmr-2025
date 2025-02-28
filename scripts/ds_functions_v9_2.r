@@ -23,13 +23,16 @@ require(abind)
 require(LaplacesDemon)
 require(chron)
 require(ks)
+library(here)
 
 #################################################################
 # 1. Create tables of physical conditions X2, OMR, Temp, and Secchi
 # make.OMR function returns an n.year x n.month matrix of mean OMR
 # make.WQ function returns n.year x n.month x n.strata matrices of mean observed Temp and Secchi 
 ### X2 ###
-X2 <- read.table('Data/X2.txt',header=T)
+input_path <- here::here("data/data_raw/demo_inputs")
+
+X2 <- read.table(file.path(input_path, 'X2.txt'),header=T)
 
 make.X2 <- function(t,yr) {
  if(t == 1) { X2.out <- X2[(yr-14),(t+1)] } else { # January is last month of each cohort, so use calendar year+1 in Jan
@@ -39,7 +42,7 @@ make.X2 <- function(t,yr) {
 
 ### OMR ###
 # Load daily OMR file
-OMR_daily<-read.table('Data/OMR_daily.txt',header=T)
+OMR_daily<-read.table(file.path(input_path, 'OMR_daily.txt'),header=T)
 OMR_table <- with(OMR_daily, tapply(OMR_daily$OMR.final, list(OMR_daily$Year,OMR_daily$Month), FUN=mean, na.rm='T'))
 
 make.OMR <- function(first) {
@@ -54,7 +57,7 @@ make.OMR <- function(first) {
 ### Secchi depth and Temp, from survey data ###
 # load Secchi and Temp file
 # table temp, Secchi, and salinity to get year-month-strata means
-WQ_dat=read.csv(file='Data/delta_water_quality_data_with_strata_v2.csv',header=T,stringsAsFactors = F)
+WQ_dat=read.csv(file=file.path(input_path, 'delta_water_quality_data_with_strata_v2.csv'),header=T,stringsAsFactors = F)
 WQ_dat$Year <- sapply(1:nrow(WQ_dat), function(i) ifelse(WQ_dat$Month[i]==12, WQ_dat$Year[i]-1, WQ_dat$Year[i]))  # Corrects December year assignment
 Secchi_table <- with(WQ_dat, tapply(Secchi_pos, list(Year,Month,Strata_code), FUN=mean, na.rm=T))
 Temp_table <- with(WQ_dat, tapply(Temperature, list(Year,Month,Strata_code), FUN=mean, na.rm=T))
@@ -139,8 +142,8 @@ make.WQ <- function(first) {
 # smlt.dist function returns a vector with proportion smelt in each spatial strata
 
 # load the files containing the observed DS distributions
-DS.dist=read.table('Data/DS_distribution_JanDec_1995_2015.txt',header=T)
-PEL=read.table('Data/PEL_DSLCM.txt',header=T)
+DS.dist=read.table(file.path(input_path, 'DS_distribution_JanDec_1995_2015.txt'),header=T)
+PEL=read.table(file.path(input_path, 'PEL_DSLCM.txt'),header=T)
 
 # convert observed densities to occupancy probabilities
 vol<-c(100510941,144940444,225381539,65449147,89444941,259500691,163419100,153797952,76796487,121672916,107178813,184941122) # mean DSM2 volumes
@@ -197,35 +200,35 @@ return(prbs)
 # sd(log(prey density), and mean(proportion 0s) in each spatial strata
 
 # Load the files containing the observed zoop distributions and densities
-zoopdat1=read.table('Data/Zoop.limno_____.txt',header=T)
-zoopdat2=read.table('Data/Zoop.othcaljuv_.txt',header=T)
-zoopdat3=read.table('Data/Zoop.pdiapjuv__.txt',header=T)
-zoopdat4=read.table('Data/Zoop.othcalad__.txt',header=T)
-zoopdat5=read.table('Data/Zoop.acartela__.txt',header=T)
-zoopdat6=read.table('Data/Zoop.othclad___.txt',header=T)
-zoopdat7=read.table('Data/Zoop.allcopnaup.txt',header=T)
-zoopdat8=read.table('Data/Zoop.daphnia___.txt',header=T)
-zoopdat9=read.table('Data/Zoop.othcyc____.txt',header=T)
-zoopdat10=read.table('Data/Zoop.other_____.txt',header=T)
-zoopdat11=read.table('Data/Zoop.eurytem___.txt',header=T)
-zoopdat12=read.table('Data/Zoop.pdiapfor__.txt',header=T)
+zoopdat1=read.table(file.path(input_path, 'Zoop.limno_____.txt'),header=T)
+zoopdat2=read.table(file.path(input_path, 'Zoop.othcaljuv_.txt'),header=T)
+zoopdat3=read.table(file.path(input_path, 'Zoop.pdiapjuv__.txt'),header=T)
+zoopdat4=read.table(file.path(input_path, 'Zoop.othcalad__.txt'),header=T)
+zoopdat5=read.table(file.path(input_path, 'Zoop.acartela__.txt'),header=T)
+zoopdat6=read.table(file.path(input_path, 'Zoop.othclad___.txt'),header=T)
+zoopdat7=read.table(file.path(input_path, 'Zoop.allcopnaup.txt'),header=T)
+zoopdat8=read.table(file.path(input_path, 'Zoop.daphnia___.txt'),header=T)
+zoopdat9=read.table(file.path(input_path, 'Zoop.othcyc____.txt'),header=T)
+zoopdat10=read.table(file.path(input_path, 'Zoop.other_____.txt'),header=T)
+zoopdat11=read.table(file.path(input_path, 'Zoop.eurytem___.txt'),header=T)
+zoopdat12=read.table(file.path(input_path, 'Zoop.pdiapfor__.txt'),header=T)
 zoopdatall<-abind(zoopdat1[,3:14],zoopdat2[,3:14],zoopdat3[,3:14],zoopdat4[,3:14],zoopdat5[,3:14],zoopdat6[,3:14],zoopdat7[,3:14],zoopdat8[,3:14],zoopdat9[,3:14],zoopdat10[,3:14],zoopdat10[,3:14],zoopdat12[,3:14],along=3)
 zoopdat<-array(NA,dim=c(nrow(zoopdatall),ncol(zoopdatall),n.prey))  # Switch last column (Yolo) to first column
 zoopdat[,1,]<-zoopdatall[,12,]
 zoopdat[,2:12,]<-zoopdatall[,1:11,]
 
-zoopP01=read.table('Data/Zoop.P0.limno_____.txt',header=T)
-zoopP02=read.table('Data/Zoop.P0.othcaljuv_.txt',header=T)
-zoopP03=read.table('Data/Zoop.P0.pdiapjuv__.txt',header=T)
-zoopP04=read.table('Data/Zoop.P0.othcalad__.txt',header=T)
-zoopP05=read.table('Data/Zoop.P0.acartela__.txt',header=T)
-zoopP06=read.table('Data/Zoop.P0.othclad___.txt',header=T)
-zoopP07=read.table('Data/Zoop.P0.allcopnaup.txt',header=T)
-zoopP08=read.table('Data/Zoop.P0.daphnia___.txt',header=T)
-zoopP09=read.table('Data/Zoop.P0.othcyc____.txt',header=T)
-zoopP010=read.table('Data/Zoop.P0.other_____.txt',header=T)
-zoopP011=read.table('Data/Zoop.P0.eurytem___.txt',header=T)
-zoopP012=read.table('Data/Zoop.P0.pdiapfor__.txt',header=T)
+zoopP01=read.table(file.path(input_path, 'Zoop.P0.limno_____.txt'),header=T)
+zoopP02=read.table(file.path(input_path, 'Zoop.P0.othcaljuv_.txt'),header=T)
+zoopP03=read.table(file.path(input_path, 'Zoop.P0.pdiapjuv__.txt'),header=T)
+zoopP04=read.table(file.path(input_path, 'Zoop.P0.othcalad__.txt'),header=T)
+zoopP05=read.table(file.path(input_path, 'Zoop.P0.acartela__.txt'),header=T)
+zoopP06=read.table(file.path(input_path, 'Zoop.P0.othclad___.txt'),header=T)
+zoopP07=read.table(file.path(input_path, 'Zoop.P0.allcopnaup.txt'),header=T)
+zoopP08=read.table(file.path(input_path, 'Zoop.P0.daphnia___.txt'),header=T)
+zoopP09=read.table(file.path(input_path, 'Zoop.P0.othcyc____.txt'),header=T)
+zoopP010=read.table(file.path(input_path, 'Zoop.P0.other_____.txt'),header=T)
+zoopP011=read.table(file.path(input_path, 'Zoop.P0.eurytem___.txt'),header=T)
+zoopP012=read.table(file.path(input_path, 'Zoop.P0.pdiapfor__.txt'),header=T)
 zoopP0all<-abind(zoopP01[,3:14],zoopP02[,3:14],zoopP03[,3:14],zoopP04[,3:14],zoopP05[,3:14],zoopP06[,3:14],zoopP07[,3:14],zoopP08[,3:14],zoopP09[,3:14],zoopP010[,3:14],zoopP010[,3:14],zoopP012[,3:14],along=3)
 zoopP0<-array(NA,dim=c(nrow(zoopP0all),ncol(zoopP0all),n.prey))  # Switch last column (Yolo) to first column
 zoopP0[,1,]<-zoopP0all[,12,]
@@ -260,7 +263,7 @@ for (i in 1:n.prey) {
 # returns mean monthly temps in each spatial strata
 
 # Load DSM2 daily temps
-tempDSM=read.table('Data/temp.txt',header=T)
+tempDSM=read.table(file.path(input_path,'temp.txt'),header=T)
 
 # DSM2 temps for 1995-2010
 temp.string.names <- c('Year','jday','Temp','Strata_code')

@@ -43,7 +43,7 @@ title('1999-2014 population growth',line=-1.5)
 outz.sim<-outz
 
 #FWS.abundance<-read.table('FWS.abundance.txt',header=F) # FWS abundance for 1995-2015
-FWS.abundance<-read.table('Data/FWS.abundance_LCME.txt',header=T)
+FWS.abundance<-read.table(file.path(input_path, 'FWS.abundance_LCME.txt'),header=T)
 FWS.abundance<-cbind(FWS.abundance[,2],FWS.abundance[,3],FWS.abundance[,4],FWS.abundance[,5])
 TNS.bias <- 1 #0.19
 MWT.bias <- 1 #0.42
@@ -101,7 +101,7 @@ mtext('Year', outer=T, side=1,line=1,cex=1.75)
 
 ### Pop. growth plots ###
 #outz1<-readRDS('D:/FWS/R code/Rose BEM/Peterson-Smith-Rose BEM, 2020 revisions/outz_1_19_2021.rds')
-FWS.abundance<-read.table('Data/FWS.abundance.txt',header=F) # FWS abundance for 1995-2015
+FWS.abundance<-read.table(file.path(input_path,'FWS.abundance_LCME.txt'),header=F) # FWS abundance for 1995-2015
 FWS.abundance[,2]<-FWS.abundance[,2]/TNS.bias
 FWS.abundance[,3]<-FWS.abundance[,3]/MWT.bias
 FWS.abundance[(1:6),3]<-FWS.abundance[(1:6),4]/MWT.bias
