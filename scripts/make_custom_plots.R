@@ -2,8 +2,8 @@ library(dplyr)
 library(ggplot2)
 library(here)
 
-output <- readRDS(here("IBMR/Output/outz_FirstFlush.rds"))
-lambda<-read.table(here("IBMR/Output/lamAB_FirstFlush.txt"),header=T)
+output <- readRDS(here("output/model_outputs/alt1_status-quo_output.rds"))
+lambda<-read.table(here("output/model_outputs/alt1_status-quo_lamAB.txt"),header=T)
 lambdamn<-read.table(here('IBMR/Output/lamABmn_FirstFlush.txt'),header=T)
 # defined in number 1 of get summaries
 
@@ -17,12 +17,3 @@ ggplot(lambda_df) +
   geom_hline(yintercept = 1, linetype = "dashed", color = "black") +
   labs(y = "Mean lambda")+
   theme_bw()
-
-# Questions
-
-# Walk through output rds parameters
-# What is lambdamn (what are the 9 rows?)
-# Are 1996-2014 the right years for lambda?
-# What are we getting from CalSim?
-# Adjust parameters in Action effects
-# Parallel processing might speed up the modeling
