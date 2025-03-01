@@ -3,8 +3,9 @@
 ### William Smith (USFWS; BDFWO); 21 June 2022 #################
 ################################################################
 ## Adjusted by Brian Mahardja on 27 February 2025
+outz<-outzp
 
-FWS.abundance<-read.table('Data/FWS.abundance_LCME.txt',header=F)
+FWS.abundance<-read.table(file.path(input_path,'FWS.abundance_LCME.txt'),header=F)
 FWS.abundance<-cbind(FWS.abundance[,2],FWS.abundance[,3],FWS.abundance[,4],FWS.abundance[,5])
 super<-median(c(apply(outz[1:20,1,],1,median,na.rm=T)/FWS.abundance[1:20,1], # get ratio of simulated abundance to LCME-estimated abundance
  apply(outz[1:20,2,],1,median,na.rm=T)/FWS.abundance[1:20,2],
@@ -42,6 +43,9 @@ lam.mn[7] <- exp(mean(log(lamAB[3:19,7]))) # print geometric mean pop. growth ra
 lam.mn[8] <- exp(quantile(log(lamAB[3:19,7]),0.025)) # 95% CI
 lam.mn[9] <- exp(quantile(log(lamAB[3:19,7]),0.975))
 
+#write.table(lamAB,file.path(output_path,"alt4_MaxDS_Hist_lamAB.txt"))
+#write.table(lam.mn,file.path(output_path,"alt4_MaxDS_Hist_lamABmn.txt"))
+
 # Abundance save
 abAB<-matrix(NA,19,10)
 for (t in 1:19) { 
@@ -60,6 +64,8 @@ for (t in 1:19) {
 abAB<-data.frame(abAB)
 
 abAB$year<-c(1996:2014)
+
+write.csv(abAB,file.path(output_path,"alt4_MaxDS_Hist_abundance.csv"))
 
 ### 2. save results ###
 file.save.spot<-c('Output/')
