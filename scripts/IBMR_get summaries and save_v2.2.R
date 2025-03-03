@@ -2,6 +2,7 @@
 ### Delta smelt compile IBMR runs, get summaries, save results #
 ### William Smith (USFWS; BDFWO); 21 June 2022 #################
 ################################################################
+## Modified by C. Pien on 3/3/2025
 
 FWS.abundance<-read.table(file.path(input_path,'FWS.abundance_LCME.txt'),header=F)
 FWS.abundance<-cbind(FWS.abundance[,2],FWS.abundance[,3],FWS.abundance[,4],FWS.abundance[,5])
@@ -10,7 +11,7 @@ super<-median(c(apply(outz[1:20,1,],1,median,na.rm=T)/FWS.abundance[1:20,1], # g
  apply(outz[1:20,3,],1,median,na.rm=T)/FWS.abundance[1:20,3],
  apply(outz[1:20,4,],1,median,na.rm=T)/FWS.abundance[1:20,4]))
 print(super)
-median(outz[n.years,4,]/outz[5,4,]) # mean change in subadult abundance from 1999 to 2014
+median(outz[n.years,4,]/outz[5,4,]) # mean change in subaddata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVR42mNgGPTAxsZmJsVqQApgmGw1yApwKcQiT7phRBuCzzCSDSHGMKINIeDNmWQlA2IigKJwIssQkHdINgxfmBBtGDEBS3KCxBc7pMQgMYE5c/AXPwAwSX4lV3pTWwAAAABJRU5ErkJggg==ult abundance from 1999 to 2014
 obs.Febln<-c(63.55,64.60,62.55,65.31,64.24,67.72,61.56,64.37,72.06,62.87,68.44,66.57,62.29,65.94,65.13,66.67,67.64,63.29,69.30,68.22,66.53,68.67,68.88)
 sum((obs.Febln[8:20]-apply(outz[(8:20),5,],1,median,na.rm=T))^2)
 
@@ -41,11 +42,31 @@ lam.mn[7] <- exp(mean(log(lamAB[3:19,7]))) # print geometric mean pop. growth ra
 lam.mn[8] <- exp(quantile(log(lamAB[3:19,7]),0.025)) # 95% CI
 lam.mn[9] <- exp(quantile(log(lamAB[3:19,7]),0.975))
 
+# Abundance save
+abAB<-matrix(NA,19,10)
+for (t in 1:19) { 
+  abAB[t,1] <- mean(outz[t+1,1,]/super[1],na.rm=T)
+  abAB[t,2] <- min(outz[t+1,1,]/super[1],na.rm=T)
+  abAB[t,3] <- max(outz[t+1,1,]/super[1],na.rm=T)
+  abAB[t,4] <- quantile(outz[t+1,1,]/super[1],0.025,na.rm=T)
+  abAB[t,5] <- quantile(outz[t+1,1,]/super[1],0.05,na.rm=T)
+  abAB[t,6] <- quantile(outz[t+1,1,]/super[1],0.25,na.rm=T)
+  abAB[t,7] <- quantile(outz[t+1,1,]/super[1],0.5,na.rm=T)
+  abAB[t,8] <- quantile(outz[t+1,1,]/super[1],0.75,na.rm=T)
+  abAB[t,9] <- quantile(outz[t+1,1,]/super[1],0.90,na.rm=T)
+  abAB[t,10] <- quantile(outz[t+1,1,]/super[1],0.975,na.rm=T)
+}
+
+abAB<-data.frame(abAB)
+
+abAB$year<-c(1996:2014)
+
 ### 2. save results ###
 file.save.spot<-(here::here('output/model_outputs'))
-alt.name <- "alt1"
-action.name=c('status-quo')
+alt.name <- "alt2"
+action.name=c('MaxDS_Even')
 
+write.csv(abAB,file = paste0(file.save.spot, "/", alt.name, "_", action.name, "_abundance.csv"))
 write.table(lamAB,file=paste0(file.save.spot,"/", alt.name, "_", action.name, "_",'lamAB','.txt'))
 write.table(lam.mn,file=paste0(file.save.spot,"/", alt.name, "_", action.name, "_",'lamABmn','.txt'))
 saveRDS(outz,paste0(file.save.spot, "/", alt.name, "_", action.name, "_", 'output','.rds'))
