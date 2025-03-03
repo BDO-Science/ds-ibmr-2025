@@ -20,20 +20,38 @@ AltStatusQuo_data <- read.csv(file.path(path_hydro,"CalSim3_data_StatusQuo.csv")
 AltJune_data <- read.csv(file.path(path_hydro,"CalSim3_data_June.csv")) 
 AltMaxDS_Even_data <- read.csv(file.path(path_hydro,"CalSim3_data_MaxDS_Even.csv")) 
 AltMaxDS_Hist_data <- read.csv(file.path(path_hydro,"CalSim3_data_MaxDS_Hist.csv")) 
-
+AltMaxWater_data <- read.csv(file.path(path_hydro,"CalSim3_data_MaxWater.csv")) 
+AltSummer_Even_data <- read.csv(file.path(path_hydro,"CalSim3_data_Summer_Even.csv")) 
+AltSummer_Even_AltSMSCG_data <- read.csv(file.path(path_hydro,"CalSim3_data_Summer_Even_AltSMSCG.csv")) 
+AltSummer_Hist_data <- read.csv(file.path(path_hydro,"CalSim3_data_Summer_Hist.csv")) 
+AltSummerFall_Even_data <- read.csv(file.path(path_hydro,"CalSim3_data_SummerFall_Even.csv")) 
+AltSummerFall_Hist_data <- read.csv(file.path(path_hydro,"CalSim3_data_SummerFall_Hist.csv")) 
 
 # Combine X2 data
 x2_data <- AltStatusQuo_data %>% select(Date,X2_current) %>% mutate(Scenario="StatusQuo") %>%
   bind_rows((AltJune_data %>% select(Date,X2_current) %>% mutate(Scenario="June"))) %>%
   bind_rows((AltMaxDS_Even_data %>% select(Date,X2_current) %>% mutate(Scenario="MaxDS_Even"))) %>%
-  bind_rows((AltMaxDS_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="MaxDS_Hist")))
-
+  bind_rows((AltMaxDS_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="MaxDS_Hist"))) %>%
+  bind_rows((AltMaxWater_data %>% select(Date,X2_current) %>% mutate(Scenario="MaxWater"))) %>%
+  bind_rows((AltSummer_Even_data %>% select(Date,X2_current) %>% mutate(Scenario="Summer_Even"))) %>%
+  bind_rows((AltSummer_Even_AltSMSCG_data %>% select(Date,X2_current) %>% mutate(Scenario="Summer_Even_AltSMSCG"))) %>%
+  bind_rows((AltSummer_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="Summer_Hist"))) %>%
+  bind_rows((AltSummerFall_Even_data %>% select(Date,X2_current) %>% mutate(Scenario="SummerFall_Even"))) %>%
+  bind_rows((AltSummerFall_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="SummerFall_Hist"))) 
+  
+  
 #####
 # Load Montezuma slough salinity data from CalSim
 MTZ_data <- AltStatusQuo_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="StatusQuo") %>%
   bind_rows((AltJune_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="June"))) %>%
   bind_rows((AltMaxDS_Even_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="MaxDS_Even"))) %>%
   bind_rows((AltMaxDS_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="MaxDS_Hist"))) %>%
+  bind_rows((AltMaxWater_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="MaxWater"))) %>%
+  bind_rows((AltSummer_Even_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="Summer_Even"))) %>%
+  bind_rows((AltSummer_Even_AltSMSCG_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="Summer_Even_AltSMSCG"))) %>%
+  bind_rows((AltSummer_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="Summer_Hist"))) %>%
+  bind_rows((AltSummerFall_Even_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="SummerFall_Even"))) %>%
+  bind_rows((AltSummerFall_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="SummerFall_Hist"))) %>%
   # Convert data to salinity units per discretewq package (https://github.com/InteragencyEcologicalProgram/discretewq)
   mutate(MTZ_salinity=wql::ec2pss(.data$MTZ_EC_current / 1000, t = 25))
 

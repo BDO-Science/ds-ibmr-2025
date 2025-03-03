@@ -101,9 +101,12 @@ AltStatusQuo_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-0
 AltJune_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_June_wShastaPA_dv")
 AltMaxDS_Even_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_MaxDS_Even_ShastaPA_dv")
 AltMaxDS_Hist_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_MaxDS_Hist_ShastaPA_dv")
-#AltS74_data <- dss_data_pull(dss_input="D:\\2024-07-01 - Delta Smelt SummerFallX2 VOI CalSim Runs\\CS3_DS_VOI_Alt_S74\\DSS\\output\\CS3_DS_VOI_S74_DV_dp")
-#AltS74F80_data <- dss_data_pull(dss_input="D:\\2024-07-01 - Delta Smelt SummerFallX2 VOI CalSim Runs\\CS3_DS_VOI_Alt_S74F80\\DSS\\output\\CS3_DS_VOI_S74F80_DV_dp")
-#AltNoX2_data <- dss_data_pull(dss_input="D:\\2024-07-01 - Delta Smelt SummerFallX2 VOI CalSim Runs\\CS3_DS_VOI_Alt_NoX2\\DSS\\output\\CS3_DS_VOI_NoX2_DV_dp")
+AltMaxWater_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_MaxWater_ShastaPA_dv")
+AltSummer_Even_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_Summer_Even_ShastaPA_dv")
+AltSummer_Even_AltSMSCG_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_Summer_Even_AltSMSCG_ShastaPA_dv")
+AltSummer_Hist_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_Summer_Hist_dv")
+AltSummerFall_Even_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_SummerFall_Even_dv")
+AltSummerFall_Hist_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_SummerFall_Hist_dv")
 
 
 #Export DSS output files for Delta Smelt LCM model input
@@ -111,9 +114,12 @@ write.csv(AltStatusQuo_data,file.path(path_hydro,"CalSim3_data_StatusQuo.csv"),r
 write.csv(AltJune_data,file.path(path_hydro,"CalSim3_data_June.csv"),row.names=F)
 write.csv(AltMaxDS_Even_data,file.path(path_hydro,"CalSim3_data_MaxDS_Even.csv"),row.names=F)
 write.csv(AltMaxDS_Hist_data,file.path(path_hydro,"CalSim3_data_MaxDS_Hist.csv"),row.names=F)
-#write.csv(AltS74_data,file.path(path_hydro,"AltS74_data_CalSim3_data.csv"),row.names=F)
-#write.csv(AltS74F80_data,file.path(path_hydro,"AltS74F80_data_CalSim3_data.csv"),row.names=F)
-#write.csv(AltNoX2_data,file.path(path_hydro,"AltNoX2_CalSim3_data.csv"),row.names=F)
+write.csv(AltMaxWater_data,file.path(path_hydro,"CalSim3_data_MaxWater.csv"),row.names=F)
+write.csv(AltSummer_Even_data,file.path(path_hydro,"CalSim3_data_Summer_Even.csv"),row.names=F)
+write.csv(AltSummer_Even_AltSMSCG_data,file.path(path_hydro,"CalSim3_data_Summer_Even_AltSMSCG.csv"),row.names=F)
+write.csv(AltSummer_Hist_data,file.path(path_hydro,"CalSim3_data_Summer_Hist.csv"),row.names=F)
+write.csv(AltSummerFall_Even_data,file.path(path_hydro,"CalSim3_data_SummerFall_Even.csv"),row.names=F)
+write.csv(AltSummerFall_Hist_data,file.path(path_hydro,"CalSim3_data_SummerFall_Hist.csv"),row.names=F)
 
 ##### Calculate flow input for the Delta Smelt IBMR
 
@@ -121,9 +127,16 @@ AltStatusQuo_data <- AltStatusQuo_data %>% mutate(scenario="StatusQuo")
 AltJune_data <- AltJune_data %>% mutate(scenario="June")
 AltMaxDS_Even_data <- AltMaxDS_Even_data %>% mutate(scenario="MaxDS_Even")
 AltMaxDS_Hist_data <- AltMaxDS_Hist_data %>% mutate(scenario="MaxDS_Hist")
+AltMaxWater_data <- AltMaxWater_data %>% mutate(scenario="MaxWater")
+AltSummer_Even_data <- AltSummer_Even_data %>% mutate(scenario="Summer_Even")
+AltSummer_Even_AltSMSCG_data <- AltSummer_Even_data %>% mutate(scenario="Summer_Even_AltSMSCG")
+AltSummer_Hist_data <- AltSummer_Hist_data %>% mutate(scenario="Summer_Hist")
+AltSummerFall_Even_data <- AltSummerFall_Even_data %>% mutate(scenario="SummerFall_Even")
+AltSummerFall_Hist_data <- AltSummerFall_Hist_data %>% mutate(scenario="SummerFall_Hist")
 
 
-combined_data <- bind_rows(AltStatusQuo_data,AltJune_data,AltMaxDS_Even_data,AltMaxDS_Hist_data)
+combined_data <- bind_rows(AltStatusQuo_data,AltJune_data,AltMaxDS_Even_data,AltMaxDS_Hist_data,AltMaxWater_data,AltSummer_Even_data,AltSummer_Even_AltSMSCG_data,
+                           AltSummer_Hist_data,AltSummerFall_Even_data,AltSummerFall_Hist_data)
 data_flow_IBMR <- combined_data %>% rename(X2=X2_current) %>% select(-X2_prev) %>% mutate(year=year(Date), month=month(Date))
 
 #Export full data
