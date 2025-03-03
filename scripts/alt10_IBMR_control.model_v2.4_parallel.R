@@ -57,14 +57,14 @@ Food.spp.action <- T # specified as taxa-specific multiplier
 Move.manual.action <- T # specified by directly changing distributions 'by hand' # This is the X2-fish distribution relationship
 Secchi.action <- F
 
-action <- 'StatusQuo'
+action <- 'June'
 
 move.act.mn <- matrix(NA,(n.years+1),12)
 Dist.act.array <- M.act.mult <- PD.mult <- secchi.act.array <- Temp.act.array <- X2.act.sal.array <- array(NA,dim=c((n.years+1),12,n.strata))
 
 # Load files defining covariates associated with actions
 # OMR
-OMR.act <- read.csv(file.path(action_path,'IBMR_X2_SF2025_input.csv'),header=T)
+OMR.act <- read.csv(file.path(action_path,'IBMR_OMR_SF2025_input.csv'),header=T)
 OMR.act <- OMR.act[which(OMR.act==paste0(action)),]
 rownames(OMR.act) <- OMR.act[,2]
 OMR.act <- OMR.act[,3:14]
@@ -246,9 +246,11 @@ if (length(successful_runs) > 0) {
 }
 
 parallel_runtime <- difftime(Sys.time(), parallel_start, units = "mins")
-#Time difference of 21.00134 mins
+#Time difference of 21.12437 mins
 
-saveRDS(outzp,file.path(output_path,'alt1_StatusQuo_output3.rds'))
+saveRDS(outz1p,file.path(output_path,'alt10_June_output1.rds'))
+saveRDS(outz2p,file.path(output_path,'alt10_June_output2.rds'))
+saveRDS(outzp,file.path(output_path,'alt10_June_output3.rds'))
 
 # Clean up
 # Reset future plan to sequential (default R, no parallelization)
