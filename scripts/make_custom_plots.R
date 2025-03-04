@@ -1,7 +1,6 @@
 library(dplyr)
 library(ggplot2)
 library(here)
-library(tidyr)
 
 alt <-  "alt2_MaxDS_Even"
 
@@ -17,7 +16,7 @@ lambda_df <- as.data.frame(lambda) %>%
 
 # lambda mean file
 names <- data.frame(description = c("mean_all_years", "mean_2007_2014", "mean_2005_2014", "mean_1995_2006", "mean_AN_W", "mean_D_C", "mean_1997_2014", "L95CL", "U95CL")) 
-lam.mn.df <- data.frame(lam.mn = lam.mn)
+lam.mn.df <- data.frame(lambdamn)
 lammn_df <- cbind(names, lam.mn.df)
 
 ggplot(lammn_df) + geom_col(aes(x = description, y = lam.mn)) +
