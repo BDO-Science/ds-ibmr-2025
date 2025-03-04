@@ -3,6 +3,7 @@
 ### William Smith (USFWS; BDFWO); 21 June 2022 #################
 ################################################################
 ## Modified by C. Pien on 3/3/2025
+outz <- outzp
 
 FWS.abundance<-read.table(file.path(input_path,'FWS.abundance_LCME.txt'),header=F)
 FWS.abundance<-cbind(FWS.abundance[,2],FWS.abundance[,3],FWS.abundance[,4],FWS.abundance[,5])
@@ -63,8 +64,8 @@ abAB$year<-c(1996:2014)
 
 ### 2. save results ###
 file.save.spot<-(here::here('output/model_outputs'))
-alt.name <- "alt2"
-action.name=c('MaxDS_Even')
+alt.name <- "alt5"
+action.name=c('SummerFall_Even')
 
 write.csv(abAB,file = paste0(file.save.spot, "/", alt.name, "_", action.name, "_abundance.csv"))
 write.table(lamAB,file=paste0(file.save.spot,"/", alt.name, "_", action.name, "_",'lamAB','.txt'))
