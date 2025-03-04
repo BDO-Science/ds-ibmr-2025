@@ -26,6 +26,7 @@ AltSummer_Even_AltSMSCG_data <- read.csv(file.path(path_hydro,"CalSim3_data_Summ
 AltSummer_Hist_data <- read.csv(file.path(path_hydro,"CalSim3_data_Summer_Hist.csv")) 
 AltSummerFall_Even_data <- read.csv(file.path(path_hydro,"CalSim3_data_SummerFall_Even.csv")) 
 AltSummerFall_Hist_data <- read.csv(file.path(path_hydro,"CalSim3_data_SummerFall_Hist.csv")) 
+AltMaxWater_noSMSCG_data <- read.csv(file.path(path_hydro,"CalSim3_data_MaxWater_noSMSCG.csv")) 
 
 # Combine X2 data
 x2_data <- AltStatusQuo_data %>% select(Date,X2_current) %>% mutate(Scenario="StatusQuo") %>%
@@ -37,8 +38,8 @@ x2_data <- AltStatusQuo_data %>% select(Date,X2_current) %>% mutate(Scenario="St
   bind_rows((AltSummer_Even_AltSMSCG_data %>% select(Date,X2_current) %>% mutate(Scenario="Summer_Even_AltSMSCG"))) %>%
   bind_rows((AltSummer_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="Summer_Hist"))) %>%
   bind_rows((AltSummerFall_Even_data %>% select(Date,X2_current) %>% mutate(Scenario="SummerFall_Even"))) %>%
-  bind_rows((AltSummerFall_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="SummerFall_Hist"))) 
-  
+  bind_rows((AltSummerFall_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="SummerFall_Hist"))) %>%
+  bind_rows((AltSummerFall_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="MaxWater_noSMSCG")))
   
 #####
 # Load Montezuma slough salinity data from CalSim
@@ -52,6 +53,7 @@ MTZ_data <- AltStatusQuo_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenari
   bind_rows((AltSummer_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="Summer_Hist"))) %>%
   bind_rows((AltSummerFall_Even_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="SummerFall_Even"))) %>%
   bind_rows((AltSummerFall_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="SummerFall_Hist"))) %>%
+  bind_rows((AltSummerFall_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="MaxWater_noSMSCG"))) %>%
   # Convert data to salinity units per discretewq package (https://github.com/InteragencyEcologicalProgram/discretewq)
   mutate(MTZ_salinity=wql::ec2pss(.data$MTZ_EC_current / 1000, t = 25))
 
