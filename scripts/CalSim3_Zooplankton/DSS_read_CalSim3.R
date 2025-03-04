@@ -107,6 +107,7 @@ AltSummer_Even_AltSMSCG_data <- dss_data_pull(dss_input="D:\\Summer Flow Action 
 AltSummer_Hist_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_Summer_Hist_dv")
 AltSummerFall_Even_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_SummerFall_Even_dv")
 AltSummerFall_Hist_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_SummerFall_Hist_dv")
+AltMaxWater_noSMSCG_data <- dss_data_pull(dss_input="D:\\Summer Flow Action SDM\\2025-02-27 - CalSim3 Output\\SF2025_MaxWater_noSMSCG_dv")
 
 
 #Export DSS output files for Delta Smelt LCM model input
@@ -120,6 +121,7 @@ write.csv(AltSummer_Even_AltSMSCG_data,file.path(path_hydro,"CalSim3_data_Summer
 write.csv(AltSummer_Hist_data,file.path(path_hydro,"CalSim3_data_Summer_Hist.csv"),row.names=F)
 write.csv(AltSummerFall_Even_data,file.path(path_hydro,"CalSim3_data_SummerFall_Even.csv"),row.names=F)
 write.csv(AltSummerFall_Hist_data,file.path(path_hydro,"CalSim3_data_SummerFall_Hist.csv"),row.names=F)
+write.csv(AltMaxWater_noSMSCG_data,file.path(path_hydro,"CalSim3_data_MaxWater_noSMSCG.csv"),row.names=F)
 
 ##### Calculate flow input for the Delta Smelt IBMR
 
@@ -133,10 +135,11 @@ AltSummer_Even_AltSMSCG_data <- AltSummer_Even_data %>% mutate(scenario="Summer_
 AltSummer_Hist_data <- AltSummer_Hist_data %>% mutate(scenario="Summer_Hist")
 AltSummerFall_Even_data <- AltSummerFall_Even_data %>% mutate(scenario="SummerFall_Even")
 AltSummerFall_Hist_data <- AltSummerFall_Hist_data %>% mutate(scenario="SummerFall_Hist")
+AltMaxWater_noSMSCG_data <- AltMaxWater_noSMSCG_data %>% mutate(scenario="MaxWater_noSMSCG")
 
 
 combined_data <- bind_rows(AltStatusQuo_data,AltJune_data,AltMaxDS_Even_data,AltMaxDS_Hist_data,AltMaxWater_data,AltSummer_Even_data,AltSummer_Even_AltSMSCG_data,
-                           AltSummer_Hist_data,AltSummerFall_Even_data,AltSummerFall_Hist_data)
+                           AltSummer_Hist_data,AltSummerFall_Even_data,AltSummerFall_Hist_data,AltMaxWater_noSMSCG_data)
 data_flow_IBMR <- combined_data %>% rename(X2=X2_current) %>% select(-X2_prev) %>% mutate(year=year(Date), month=month(Date))
 
 #Export full data
