@@ -42,20 +42,37 @@ x2_data <- AltStatusQuo_data %>% select(Date,X2_current) %>% mutate(Scenario="St
   bind_rows((AltSummerFall_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="MaxWater_noSMSCG")))
   
 #####
-# Load Montezuma slough salinity data from CalSim
-MTZ_data <- AltStatusQuo_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="StatusQuo") %>%
-  bind_rows((AltJune_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="June"))) %>%
-  bind_rows((AltMaxDS_Even_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="MaxDS_Even"))) %>%
-  bind_rows((AltMaxDS_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="MaxDS_Hist"))) %>%
-  bind_rows((AltMaxWater_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="MaxWater"))) %>%
-  bind_rows((AltSummer_Even_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="Summer_Even"))) %>%
-  bind_rows((AltSummer_Even_AltSMSCG_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="Summer_Even_AltSMSCG"))) %>%
-  bind_rows((AltSummer_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="Summer_Hist"))) %>%
-  bind_rows((AltSummerFall_Even_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="SummerFall_Even"))) %>%
-  bind_rows((AltSummerFall_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="SummerFall_Hist"))) %>%
-  bind_rows((AltSummerFall_Hist_data %>% select(Date,MTZ_EC_current) %>% mutate(Scenario="MaxWater_noSMSCG"))) %>%
+# Load Belden Landing salinity data from CalSim
+BD_data <- AltStatusQuo_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="StatusQuo") %>%
+  bind_rows((AltJune_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="June"))) %>%
+  bind_rows((AltMaxDS_Even_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="MaxDS_Even"))) %>%
+  bind_rows((AltMaxDS_Hist_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="MaxDS_Hist"))) %>%
+  bind_rows((AltMaxWater_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="MaxWater"))) %>%
+  bind_rows((AltSummer_Even_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="Summer_Even"))) %>%
+  bind_rows((AltSummer_Even_AltSMSCG_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="Summer_Even_AltSMSCG"))) %>%
+  bind_rows((AltSummer_Hist_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="Summer_Hist"))) %>%
+  bind_rows((AltSummerFall_Even_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="SummerFall_Even"))) %>%
+  bind_rows((AltSummerFall_Hist_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="SummerFall_Hist"))) %>%
+  bind_rows((AltSummerFall_Hist_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="MaxWater_noSMSCG"))) %>%
+  mutate(Month=month(Date)) %>%
+  #Based on looking at the data, will use temperature at 25 for now and assume this is specific conductance
+  mutate(BD_salinity = wql::ec2pss(.data$BD_EC_current / 1000, t = 25))
   # Convert data to salinity units per discretewq package (https://github.com/InteragencyEcologicalProgram/discretewq)
-  mutate(MTZ_salinity=wql::ec2pss(.data$MTZ_EC_current / 1000, t = 25))
+  # Refer to Suisun Marsh Survey data at MZ6 to get avg temperature for salinity conversion
+  #mutate(BD_salinity= case_when(
+  #  Month==1 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 9.51),
+  #  Month==2 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 11.5),
+  #  Month==3 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 13.6),
+  #  Month==4 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 17.2),
+  #  Month==5 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 18.7),
+  #  Month==6 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 21.7),
+   # Month==7 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 22.4),
+   # Month==8 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 22.9),
+   # Month==9 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 21.1),
+   # Month==10 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 18.6),
+    #Month==11 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 15.4),
+    #Month==12 ~ wql::ec2pss(.data$BD_EC_current / 1000, t = 11.2)
+   # ))
 
 ##
 x2_data <- na.omit(x2_data) %>% rename(X2 = X2_current) %>% mutate(Month=month(Date))
@@ -79,8 +96,8 @@ x2_data_reformat <- x2_data_expanded %>%
   spread(Scenario,salinity) 
 
 # Create data for Suisun Marsh
-SM_data <- MTZ_data %>% mutate(year=year(Date),month=month(Date),region="Suisun Marsh") %>% rename(scenario=Scenario) %>%
-  select(month,region,year,scenario,MTZ_salinity) %>% spread(scenario,MTZ_salinity)
+SM_data <- BD_data %>% mutate(year=year(Date),month=month(Date),region="Suisun Marsh") %>% rename(scenario=Scenario) %>%
+  select(month,region,year,scenario,BD_salinity) %>% spread(scenario,BD_salinity)
 #####
 
 # Remove original Suisun Marsh salinity from X2-salinity model
