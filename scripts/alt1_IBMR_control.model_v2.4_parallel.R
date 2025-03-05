@@ -92,7 +92,7 @@ rownames(X2.dist.act) <- X2.dist.act[,2]
 X2.target <- X2.dist.act[,3:14]
 
 # Prey
-PD.act <- read.csv(file.path(action_path,'zoop_scalar_output_SF2025_2025-02-28.csv'),header=T)
+PD.act <- read.csv(file.path(action_path,'zoop_scalar_output_SF2025_2025-03-04.csv'),header=T)
 
 PD.act.col <- which(colnames(PD.act)==paste0("sal_",action,"_median"))
 
@@ -248,7 +248,7 @@ if (length(successful_runs) > 0) {
 parallel_runtime <- difftime(Sys.time(), parallel_start, units = "mins")
 #Time difference of 21.00134 mins
 
-saveRDS(outzp,file.path(output_path,'alt1_StatusQuo_output3.rds'))
+saveRDS(outzp,file.path(output_path,'alt1_StatusQuo_output_SMSCGfixed.rds'))
 
 # Clean up
 # Reset future plan to sequential (default R, no parallelization)
