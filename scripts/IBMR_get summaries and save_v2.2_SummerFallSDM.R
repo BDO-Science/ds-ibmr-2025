@@ -43,8 +43,8 @@ lam.mn[7] <- exp(mean(log(lamAB[3:19,7]))) # print geometric mean pop. growth ra
 lam.mn[8] <- exp(quantile(log(lamAB[3:19,7]),0.025)) # 95% CI
 lam.mn[9] <- exp(quantile(log(lamAB[3:19,7]),0.975))
 
-write.table(lamAB,file.path(output_path,"alt1_StatusQuo_lamAB.txt"))
-write.table(lam.mn,file.path(output_path,"alt1_StatusQuo_lamABmn.txt"))
+write.table(lamAB,file.path(output_path,"alt12_MaxWater_noSMSCG_lamAB.txt"))
+write.table(lam.mn,file.path(output_path,"alt12_MaxWater_noSMSCG_lamABmn.txt"))
 
 # Abundance save
 abAB<-matrix(NA,19,10)
@@ -65,7 +65,7 @@ abAB<-data.frame(abAB)
 
 abAB$year<-c(1996:2014)
 
-write.csv(abAB,file.path(output_path,"alt1_StatusQuo_abundance.csv"))
+write.csv(abAB,file.path(output_path,"alt12_MaxWater_noSMSCG_abundance.csv"))
 
 ### 2. save results ###
 file.save.spot<-c('Output/')

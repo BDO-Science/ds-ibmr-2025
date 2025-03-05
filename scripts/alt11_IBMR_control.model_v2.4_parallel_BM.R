@@ -92,7 +92,7 @@ rownames(X2.dist.act) <- X2.dist.act[,2]
 X2.target <- X2.dist.act[,3:14]
 
 # Prey
-PD.act <- read.csv(file.path(action_path,'zoop_scalar_output_SF2025_2025-03-03.csv'),header=T)
+PD.act <- read.csv(file.path(action_path,'zoop_scalar_output_SF2025_2025-03-04.csv'),header=T)
 
 PD.act.col <- which(colnames(PD.act)==paste0("sal_",action,"_median"))
 
@@ -250,7 +250,7 @@ parallel_runtime <- difftime(Sys.time(), parallel_start, units = "mins")
 
 #saveRDS(outz1p,file.path(output_path,'alt11_June_output1.rds'))
 #saveRDS(outz2p,file.path(output_path,'alt11_June_output2.rds'))
-saveRDS(outzp,file.path(output_path,'alt11_MaxWater_output.rds'))
+saveRDS(outzp,file.path(output_path,'alt11_MaxWater_output_SMSCGfixed.rds'))
 
 # Clean up
 # Reset future plan to sequential (default R, no parallelization)
