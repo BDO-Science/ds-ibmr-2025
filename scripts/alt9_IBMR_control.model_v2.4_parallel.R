@@ -17,6 +17,7 @@ rm(list=ls(all=TRUE))
 setwd(here::here())
 input_path <- here::here("data/data_raw/demo_inputs")
 action_path <- here::here("data/data_processed/")
+output_path <- here::here("output/model_outputs/")
 
 ### Model parameters ###
 # 1. Calibration
@@ -91,7 +92,7 @@ rownames(X2.dist.act) <- X2.dist.act[,2]
 X2.target <- X2.dist.act[,3:14]
 
 # Prey
-PD.act <- read.csv(file.path(action_path,'zoop_scalar_output_SF2025_2025-03-03.csv'),header=T)
+PD.act <- read.csv(file.path(action_path,'zoop_scalar_output_SF2025_2025-03-04.csv'),header=T)
 
 PD.act.col <- which(colnames(PD.act)==paste0("sal_",action,"_median"))
 
@@ -245,6 +246,10 @@ if (length(successful_runs) > 0) {
 }
 
 parallel_runtime <- difftime(Sys.time(), parallel_start, units = "mins")
+parallel_runtime
+#Time difference of 20.19956 mins
+
+saveRDS(outzp,file.path(output_path,'alt9_Summer_Hist_SMSCGfixed.rds'))
 
 # Clean up
 # Reset future plan to sequential (default R, no parallelization)
