@@ -2,11 +2,21 @@ library(dplyr)
 library(ggplot2)
 library(here)
 
+alt <-  "alt1_StatusQuo"
 alt <-  "alt2_MaxDS_Even"
+alt <- "alt4_MaxDS_Hist"
+alt <- "alt5_SummerFall_Even_Hist"
+alt <- "alt6_Summer_Even"
+alt <- "alt7_Summer_Even_AltSMSCG"
+alt <- "alt8_SummerFall_Hist"
+alt <- "alt9_Summer_Hist"
+alt <- "alt10_June"
+alt <- "alt11_MaxWater"
+alt <- "alt12_MaxWater_noSMSCG"
 
 output <- readRDS(here(paste0("output/model_outputs/", alt, "_output.rds")))
 lambda<-read.table(here(paste0("output/model_outputs/", alt, "_lamAB.txt")),header=T)
-lambdamn<-read.table(here(paste0("output/model_outputs/", alt, "_lamABmn.txt")),header=T)
+lambdamn2<-read.table(here(paste0("output/model_outputs/", alt, "_lamABmn.txt")),header=T)
 abundance <- read.csv(here(paste0("output/model_outputs/", alt, "_abundance.csv")))
 # defined in number 1 of get summaries
 
