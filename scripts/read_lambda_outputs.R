@@ -10,6 +10,7 @@ library(ggplot2)
 library(tidyr)
 
 output_path <- here::here("output/model_outputs/")
+plot_path <- here::here("output/figures/")
 
 # Read all files and filter to lambda mean files
 fp_lam <- dir(here(output_path), full.names = TRUE)
@@ -42,7 +43,7 @@ long <- pivot_longer(lammn_df, cols = StatusQuo:Summer_Hist, names_to = "alt", v
 # write_csv(long, here(output_path, "mean_lambda_all_alts_long.csv"))
 
 # Plot lambda
-ggplot() + 
+(lambda_plot <- ggplot() + 
   geom_point(data = long %>%
                filter(description %in% c("mean_all_years", "mean_AN_W")), aes(x = alt, y = lambdaval), size = 2) +
   geom_hline(yintercept = 1, linetype = "dashed")+
@@ -50,8 +51,12 @@ ggplot() +
   labs(y = "Mean Lambda")+ 
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, hjust = 0.99),
-        axis.title.x = element_blank())
+        axis.title.x = element_blank()))
 
+
+png(filename = file.path(plot_path, "lambda.png"), width = 6, height = 8, units = "in", res = 300)
+lambda_plot
+dev.off()
 
 # Plot with confidence limits
 cls <- long %>% filter(description %in% c("mean_all_years", "L95CL", "U95CL")) %>%
