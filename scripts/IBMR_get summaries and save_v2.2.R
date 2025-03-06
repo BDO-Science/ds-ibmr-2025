@@ -3,8 +3,17 @@
 ### William Smith (USFWS; BDFWO); 21 June 2022 #################
 ################################################################
 ## Modified by C. Pien on 3/3/2025
+input_path <- here::here("data/data_raw/demo_inputs")
+action_path <- here::here("data/data_processed/")
+output_path <- here::here("output/model_outputs/")
+
+# Run this one right after getting model results
 outz <- outzp
 
+# Otherwise run this one if you saved the model results. Pair with all_alts_cheat.R
+outz <- readRDS(here::here(output_path, alt))
+
+# Run this for all
 FWS.abundance<-read.table(file.path(input_path,'FWS.abundance_LCME.txt'),header=F)
 FWS.abundance<-cbind(FWS.abundance[,2],FWS.abundance[,3],FWS.abundance[,4],FWS.abundance[,5])
 super<-median(c(apply(outz[1:20,1,],1,median,na.rm=T)/FWS.abundance[1:20,1], # get ratio of simulated abundance to LCME-estimated abundance
@@ -63,9 +72,9 @@ abAB<-data.frame(abAB)
 abAB$year<-c(1996:2014)
 
 ### 2. save results ###
-file.save.spot<-(here::here('output/model_outputs'))
-alt.name <- "alt5"
-action.name=c('SummerFall_Even')
+# file.save.spot<-(here::here('output/model_outputs'))
+# alt.name <- "alt1"
+# action.name=c('StatusQuo')
 
 write.csv(abAB,file = paste0(file.save.spot, "/", alt.name, "_", action.name, "_abundance.csv"))
 write.table(lamAB,file=paste0(file.save.spot,"/", alt.name, "_", action.name, "_",'lamAB','.txt'))
