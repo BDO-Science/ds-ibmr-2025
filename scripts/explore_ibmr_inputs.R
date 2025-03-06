@@ -38,7 +38,25 @@ x2_summerfall <- x2_long %>% filter(month > 5 & month<11)
   theme(axis.text.x = element_text(angle = 90, hjust = 0.99),
         axis.title.x = element_blank()))
 
-w_an <- c()
+# Line plot 
+
+(summer_fall_x2_line_plot <- ggplot() +
+    geom_point(data = x2_summerfall, aes(x = year, y = x2, color = scenario))+
+    geom_line(data = x2_summerfall, aes(x = year, y = x2, color = scenario))+
+    facet_wrap(~month, nrow = 5) + 
+    theme_bw())
+
+# Interactive plot
+plotly::ggplotly(summer_fall_x2_line_plot)
+
+# Tile plot
+(summer_fall_x2_tile <- ggplot() +
+    geom_tile(data = x2_summerfall, aes(x = year, y = scenario, fill = x2), color = "black")+
+    facet_wrap(~month)+
+    viridis::scale_fill_viridis() + 
+    theme_bw())
+
+# w_an <- c()
 
 ### Write plots ------------------------------------
 png(filename = file.path(plot_path, "X2_summer.png"), width = 5, height = 8, units = "in", res = 300)
