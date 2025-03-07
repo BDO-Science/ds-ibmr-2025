@@ -31,7 +31,7 @@ names <- data.frame(description = c("mean_all_years", "mean_2007_2014", "mean_20
 lammn_df <- cbind(names, df_lam)
 
 # Write file
-# write_csv(lammn_df, here(output_path, "mean_lambda_all_alts.csv"))
+# write_csv(lammn_df, here(output_path, "summarized_output/mean_lambda_all_alts.csv"))
 
 # Make a long version of the data for plotting
 long <- pivot_longer(lammn_df, cols = StatusQuo:Summer_Hist, names_to = "alt", values_to = "lambdaval") %>%
@@ -40,22 +40,39 @@ long <- pivot_longer(lammn_df, cols = StatusQuo:Summer_Hist, names_to = "alt", v
          alt = forcats::fct_relevel(alt,  c("StatusQuo", "MaxDS_Even","MaxDS_Hist", "SummerFall_Even", "Summer_Even", "Summer_Even_AltSMSCG",
                                             "SummerFall_Hist", "Summer_Hist", "June", "MaxWater", "MaxWater_noSMSCG"))) 
 
-# write_csv(long, here(output_path, "mean_lambda_all_alts_long.csv"))
+# write_csv(long, here(output_path, "summarized_output/mean_lambda_all_alts_long.csv"))
+
 
 # Plot lambda
 (lambda_plot <- ggplot() + 
-  geom_point(data = long %>%
-               filter(description %in% c("mean_all_years", "mean_AN_W")), aes(x = alt, y = lambdaval), size = 2) +
-  geom_hline(yintercept = 1, linetype = "dashed")+
-  facet_wrap(~description, nrow = 2, scales = "free_y") + 
-  labs(y = "Mean Lambda")+ 
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 0.99),
-        axis.title.x = element_blank()))
+    geom_point(data = long %>%
+                 filter(description =="mean_all_years"), aes(x = alt, y = lambdaval), size = 2) +
+    geom_hline(yintercept = 1, linetype = "dashed")+
+    labs(y = "Mean Lambda")+ 
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 0.99),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()))
 
-
-png(filename = file.path(plot_path, "lambda.png"), width = 6, height = 8, units = "in", res = 300)
+png(filename = file.path(plot_path, "lambda.png"), width = 6, height = 6, units = "in", res = 300)
 lambda_plot
+dev.off()
+
+# Plot lambda two ways
+(lambda_facet_plot <- ggplot() + 
+    geom_point(data = long %>%
+                 filter(description %in% c("mean_all_years", "mean_AN_W")), aes(x = alt, y = lambdaval), size = 2) +
+    geom_hline(yintercept = 1, linetype = "dashed")+
+    facet_wrap(~description, nrow = 2, scales = "free_y") + 
+    labs(y = "Mean Lambda")+ 
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 0.99),
+          axis.text = element_text(size = 12),
+          strip.text = element_text(size = 12),
+          axis.title.x = element_blank()))
+
+png(filename = file.path(plot_path, "lambda_all_anwet.png"), width = 6, height = 8, units = "in", res = 300)
+lambda_facet_plot
 dev.off()
 
 # Plot with confidence limits
