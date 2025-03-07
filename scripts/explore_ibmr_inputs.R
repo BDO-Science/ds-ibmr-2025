@@ -21,7 +21,6 @@ x2_long <- x2 %>%
                                                        "SummerFall_Hist", "Summer_Hist", "June", "MaxWater", "MaxWater_noSMSCG"))) 
 x2_summerfall <- x2_long %>% filter(month > 5 & month<11)
 
-
 # Compare summer X2s
 (summer_x2 <- ggplot() + 
   geom_boxplot(data= x2_summerfall %>% filter(month<9), aes(x = scenario, y = x2))+ 
@@ -41,10 +40,17 @@ x2_summerfall <- x2_long %>% filter(month > 5 & month<11)
 # Line plot 
 
 (summer_fall_x2_line_plot <- ggplot() +
-    geom_point(data = x2_summerfall, aes(x = year, y = x2, color = scenario))+
+    geom_point(data = x2_summerfall, aes(x = year, y = x2, color = scenario, shape = scenario), size = 3)+
     geom_line(data = x2_summerfall, aes(x = year, y = x2, color = scenario))+
+    scale_shape_manual(values = c(20, 0, 18, 6, 8, 9, 10, 23, 1, 13, 14))+
+    viridis::scale_color_viridis(discrete = TRUE, option = "turbo") + 
+    scale_x_continuous(breaks = seq(1996, 2014, 2))+ 
     facet_wrap(~month, nrow = 5) + 
     theme_bw())
+
+png(filename = file.path(plot_path, "x2_trends.png"), width = 8, height = 8, units = "in", res = 300)
+summer_fall_x2_line_plot
+dev.off() 
 
 # Interactive plot
 plotly::ggplotly(summer_fall_x2_line_plot)
