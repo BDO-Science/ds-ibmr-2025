@@ -250,7 +250,7 @@ parallel_runtime <- difftime(Sys.time(), parallel_start, units = "mins")
 
 #saveRDS(outz1p,file.path(output_path,'alt11_June_output1.rds'))
 #saveRDS(outz2p,file.path(output_path,'alt11_June_output2.rds'))
-saveRDS(outzp,file.path(output_path,'alt11_MaxWater_output_SMSCGfixed_2022MED.rds'))
+saveRDS(outzp,file.path(output_path,'alt11_MaxWater_SMSCGfixed_2022MED.rds'))
 
 # Clean up
 # Reset future plan to sequential (default R, no parallelization)
