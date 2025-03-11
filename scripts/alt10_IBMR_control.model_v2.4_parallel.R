@@ -17,7 +17,7 @@ rm(list=ls(all=TRUE))
 setwd(here::here())
 input_path <- here::here("data/data_raw/demo_inputs")
 action_path <- here::here("data/data_processed/")
-output_path <- here::here("output/model_outputs/")
+output_path <- here::here("output/model_outputs/outputs_2022MED/")
 
 ### Model parameters ###
 # 1. Calibration
@@ -64,7 +64,7 @@ Dist.act.array <- M.act.mult <- PD.mult <- secchi.act.array <- Temp.act.array <-
 
 # Load files defining covariates associated with actions
 # OMR
-OMR.act <- read.csv(file.path(action_path,'IBMR_OMR_SF2025_input.csv'),header=T)
+OMR.act <- read.csv(file.path(action_path,'IBMR_OMR_SF2022MED_input.csv'),header=T)
 OMR.act <- OMR.act[which(OMR.act==paste0(action)),]
 rownames(OMR.act) <- OMR.act[,2]
 OMR.act <- OMR.act[,3:14]
@@ -86,13 +86,13 @@ for (m in 1:12) {
  }}
 
 # X2
-X2.dist.act <- read.csv(file.path(action_path,'IBMR_X2_SF2025_input.csv'),header=T)
+X2.dist.act <- read.csv(file.path(action_path,'IBMR_X2_SF2022MED_input.csv'),header=T)
 X2.dist.act <- X2.dist.act[which(X2.dist.act==paste0(action)),]
 rownames(X2.dist.act) <- X2.dist.act[,2]
 X2.target <- X2.dist.act[,3:14]
 
 # Prey
-PD.act <- read.csv(file.path(action_path,'zoop_scalar_output_SF2025_2025-03-04.csv'),header=T)
+PD.act <- read.csv(file.path(action_path,'zoop_scalar_output_SF2022MED_2025-03-10.csv'),header=T)
 
 PD.act.col <- which(colnames(PD.act)==paste0("sal_",action,"_median"))
 
@@ -249,7 +249,7 @@ if (length(successful_runs) > 0) {
 parallel_runtime <- difftime(Sys.time(), parallel_start, units = "mins")
 #Time difference of 20.00277 mins
 
-saveRDS(outzp,file.path(output_path,'alt10_June_SMSCGfixed.rds'))
+saveRDS(outzp,file.path(output_path,'alt10_June_SMSCGfixed_2022MED.rds'))
 
 # Clean up
 # Reset future plan to sequential (default R, no parallelization)
