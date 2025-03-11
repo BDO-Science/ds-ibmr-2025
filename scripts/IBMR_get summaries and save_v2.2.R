@@ -7,8 +7,27 @@ input_path <- here::here("data/data_raw/demo_inputs")
 action_path <- here::here("data/data_processed/")
 output_path <- here::here("output/model_outputs/outputs_2022MED/")
 
+### Load functions and data ###
+
+### 2. Model dimensions ###
+# spatial strata names: Yolo Sac SDelta EDelta LowSac LowSJ  Conf SSuisunE NSuisunE Marsh SSuisunW NSuisunW
+# zoop names: limno othcaljuv pdiapjuv othcalad acartela othclad allcopnaup daphnia othcyc other eurytem pdiapfor
+# data dimensions: c(year, month, spatial strata, prey)
+yearz <- c(1980:2014) # Peterson et al. modeled years 1980:1999
+first <- 16 # begin simulation in year 1995
+super.ad <- 200 # number of pre-spawn adult super-individual
+crash.max <- 2.3e+5 # maximum number of larval production before stopping ('exploding' simulated pop.)
+sims <- 330 # number of simulations to run
+source("scripts/IBMR_parameters_v2.R")
+source("scripts/ds_functions_v9_2.R") # This loads R libraries and functions to summarize, OMR, smelt distribution, food, and egg survival, v3=observed dist v4=occ predicted dist
+source("scripts/IBMR_pop.model_v2.4.R")
+move.matrix<-read.table(file.path(input_path,'move.matrix.12strata_v3.txt')) # Load movement rules
+DOY<-c(15, 45, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # day of year midpoints for each month
+days.in.month<-read.table(file.path(input_path, 'days.in.month.txt'),header=T)
+wtr.yr<-c(1,1,1,1,1,1,4,4,2,3,3,1,4,5,4,3,1,3,4,5,5) # Sacto WY type wet = 1, critical = 5
+
 # Run this one right after getting model results
-outz <- outzp
+# outz <- outzp
 
 # Otherwise run this one if you saved the model results. Pair with all_alts_cheat.R
 outz <- readRDS(here::here(output_path, alt))
@@ -72,7 +91,7 @@ abAB<-data.frame(abAB)
 abAB$year<-c(1996:2014)
 
 ### 2. save results ###
-# file.save.spot<-(here::here('output/model_outputs'))
+file.save.spot<-output_path
 # alt.name <- "alt1"
 # action.name=c('StatusQuo')
 
