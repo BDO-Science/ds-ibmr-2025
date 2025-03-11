@@ -3,14 +3,16 @@ library(dplyr)
 library(readr)
 library(ggplot2)
 library(tidyr)
+library(here)
+library(purrr)
 
-
-output_path <- here::here("output/model_outputs/")
+# change this depending on which output used
+output_path <- here::here("output/model_outputs/outputs_2022MED")
 
 # Read all files and filter to rds files
 fp_abund <- dir(here(output_path), full.names = TRUE)
 fp_abund2 <- data.frame(fp_abund) %>%
-  filter(grepl("SMSCGfixed.rds", fp_abund))
+  filter(grepl("SMSCGfixed_2022MED.rds", fp_abund)) # change this depending on which output used
 
 fp_abund_char <- as.character(fp_abund2$fp_abund)
 # List of rds output
@@ -21,6 +23,12 @@ fp_abund_char
 names(ls_abund) <- c("StatusQuo", "June", "MaxWater","MaxWater_noSMSCG","MaxDS_Even","MaxDS_Hist",
                      "SummerFall_Even","Summer_Even","Summer_Even_AltSMSCG","SummerFall_Hist","Summer_Hist")
 
+
+# Needed for fcn below
+input_path <- here::here("data/data_raw/demo_inputs")
+FWS.abundance<-read.table(file.path(input_path,'FWS.abundance_LCME.txt'),header=F)
+FWS.abundance<-cbind(FWS.abundance[,2],FWS.abundance[,3],FWS.abundance[,4],FWS.abundance[,5])
+
 # Define a function to get the minimum from a specific column
 get_column_minimum <- function(matrix_data) {
   # Initialize a vector to store minimum values
@@ -30,6 +38,12 @@ get_column_minimum <- function(matrix_data) {
   for (i in 1:dim(matrix_data)[3]) {
     # Get the specific vector (column)
     vector <- matrix_data[(1:nrow(matrix_data)),4,i]
+    
+    # calculate super
+    super<-median(c(apply(matrix_data[1:20,1,],1,median,na.rm=T)/FWS.abundance[1:20,1], # get ratio of simulated abundance to LCME-estimated abundance
+                    apply(matrix_data[1:20,2,],1,median,na.rm=T)/FWS.abundance[1:20,2],
+                    apply(matrix_data[1:20,3,],1,median,na.rm=T)/FWS.abundance[1:20,3],
+                    apply(matrix_data[1:20,4,],1,median,na.rm=T)/FWS.abundance[1:20,4]))
     
     # Store the minimum value in the min_values vector
     min_values[i] <- min(vector)/super[1]
@@ -60,7 +74,7 @@ min_abundance_table <- data.frame(Alternatives=
 
 
 # Export out results as csv
-write_csv(min_abundance_table, file.path(output_path, "summarized_output/abundance_meanmin_all_alts.csv"))
+write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
 
 
 ####
