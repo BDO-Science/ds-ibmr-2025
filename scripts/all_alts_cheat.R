@@ -56,9 +56,7 @@ action.name<- ('MaxWater_noSMSCG')
 
 
 
-
-
-
+# 2022MED hydrology
 
 alt <- "alt1_StatusQuo_SMSCGfixed_2022MED.rds"
 alt.name <- "alt1"
@@ -102,3 +100,4 @@ action.name=c('MaxWater')
 
 alt <- "alt12_MaxWater_noSMSCG_SMSCGfixed_2022MED.rds"
 alt.name <- "alt12"
+action.name<- ('MaxWater_noSMSCG')
