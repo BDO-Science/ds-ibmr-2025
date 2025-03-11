@@ -8,8 +8,11 @@ library(dplyr)
 library(readr)
 library(ggplot2)
 library(tidyr)
+library(here)
+library(purrr)
 
-output_path <- here::here("output/model_outputs/")
+# output_path <- here::here("output/model_outputs/")
+output_path <- here::here("output/model_outputs/outputs_2022MED/")
 plot_path <- here::here("output/figures/")
 
 # Read all files and filter to lambda mean files
@@ -31,7 +34,7 @@ names <- data.frame(description = c("mean_all_years", "mean_2007_2014", "mean_20
 lammn_df <- cbind(names, df_lam)
 
 # Write file
-# write_csv(lammn_df, here(output_path, "summarized_output/mean_lambda_all_alts.csv"))
+# write_csv(lammn_df, here(output_path, "../summarized_output/mean_lambda_all_alts_2022MED.csv"))
 
 # Make a long version of the data for plotting
 long <- pivot_longer(lammn_df, cols = StatusQuo:Summer_Hist, names_to = "alt", values_to = "lambdaval") %>%
@@ -40,7 +43,7 @@ long <- pivot_longer(lammn_df, cols = StatusQuo:Summer_Hist, names_to = "alt", v
          alt = forcats::fct_relevel(alt,  c("StatusQuo", "MaxDS_Even","MaxDS_Hist", "SummerFall_Even", "Summer_Even", "Summer_Even_AltSMSCG",
                                             "SummerFall_Hist", "Summer_Hist", "June", "MaxWater", "MaxWater_noSMSCG"))) 
 
-# write_csv(long, here(output_path, "summarized_output/mean_lambda_all_alts_long.csv"))
+# write_csv(long, here(output_path, "../summarized_output/mean_lambda_all_alts_long_2022MED.csv"))
 
 
 # Plot lambda
