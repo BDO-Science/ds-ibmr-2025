@@ -79,12 +79,22 @@ write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abun
 
 ####
 # Check correlation with lambda
-min_abundance_table$lambda <- c(0.985157396 ,0.946904929,0.960571257,0.958925921791839,
-                                1.04458429926919, 1.034668792,0.953879698,0.966400795,0.967343145,
-                                0.945440517, 0.958756902)
-
+# DWR hydro 
+lam <- read_csv(here("output/model_outputs/summarized_output/mean_lambda_all_alts_long.csv"))
+lambda_vals <- lam %>% filter(description == "mean_all_years")
+min_abundance_table$lambda <- lambda_vals$lambdaval
+# min_abundance_table$lambda <- c(0.985157396 ,0.946904929,0.960571257,0.958925921791839,
+#                                 1.04458429926919, 1.034668792,0.953879698,0.966400795,0.967343145,
+#                                 0.945440517, 0.958756902)
 summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
 
+
+# USBR hydro
+lam <- read_csv(here("output/model_outputs/summarized_output/mean_lambda_all_alts_long_2022MED.csv"))
+lambda_vals <- lam %>% filter(description == "mean_all_years")
+min_abundance_table$lambda <- lambda_vals$lambdaval
+
+summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
 
 
 
