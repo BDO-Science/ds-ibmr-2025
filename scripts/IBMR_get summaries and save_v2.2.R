@@ -6,6 +6,7 @@
 input_path <- here::here("data/data_raw/demo_inputs")
 action_path <- here::here("data/data_processed/")
 output_path <- here::here("output/model_outputs/outputs_2022MED/")
+# output_path <- here::here("output/model_outputs/outputs_AdjHist/")
 
 ### Load functions and data ###
 
