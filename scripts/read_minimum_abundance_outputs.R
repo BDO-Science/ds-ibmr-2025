@@ -74,10 +74,6 @@ min_abundance_table <- data.frame(Alternatives=
                                     ))
 
 
-# Export out results as csv
-# write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
-write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
-
 
 ####
 # Check correlation with lambda
@@ -90,6 +86,10 @@ min_abundance_table$lambda <- lambda_vals$lambdaval
 #                                 0.945440517, 0.958756902)
 summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
 
+# Export out results as csv
+# write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
+write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
+
 
 # USBR hydro
 lam2 <- read_csv(here("output/model_outputs/summarized_output/mean_lambda_all_alts_long_2022MED.csv"))
@@ -97,6 +97,10 @@ lambda_vals2 <- lam2 %>% filter(description == "mean_all_years")
 min_abundance_table$lambda <- lambda_vals2$lambdaval
 
 summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
+
+# Export out results as csv
+# write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
+write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
 
 
 
