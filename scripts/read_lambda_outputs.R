@@ -11,7 +11,7 @@ library(tidyr)
 library(here)
 library(purrr)
 
-# output_path <- here::here("output/model_outputs/")
+# output_path <- here::here("output/model_outputs/outputs_AdjHist")
 output_path <- here::here("output/model_outputs/outputs_2022MED/")
 plot_path <- here::here("output/figures/")
 
@@ -49,7 +49,7 @@ long <- pivot_longer(lammn_df, cols = StatusQuo:Summer_Hist, names_to = "alt", v
 # Plot lambda
 (lambda_plot <- ggplot() + 
     geom_point(data = long %>%
-                 filter(description =="mean_all_years"), aes(x = alt, y = lambdaval), size = 2) +
+                 filter(description =="mean_all_years"), aes(x = alt, y = lambdaval), size = 3) +
     geom_hline(yintercept = 1, linetype = "dashed")+
     labs(y = "Mean Lambda")+ 
     theme_bw() +
@@ -57,7 +57,7 @@ long <- pivot_longer(lammn_df, cols = StatusQuo:Summer_Hist, names_to = "alt", v
           axis.text = element_text(size = 12),
           axis.title.x = element_blank()))
 
-png(filename = file.path(plot_path, "lambda.png"), width = 6, height = 6, units = "in", res = 300)
+png(filename = file.path(plot_path, "lambda_2022MED.png"), width = 6, height = 6, units = "in", res = 300)
 lambda_plot
 dev.off()
 
