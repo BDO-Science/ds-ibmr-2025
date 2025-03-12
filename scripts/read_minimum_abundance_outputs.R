@@ -26,7 +26,7 @@ fp_abund_char
 names(ls_abund) <- c("StatusQuo", "June", "MaxWater","MaxWater_noSMSCG","MaxDS_Even","MaxDS_Hist",
                      "SummerFall_Even","Summer_Even","Summer_Even_AltSMSCG","SummerFall_Hist","Summer_Hist")
 
-# Calculate super
+# Calculate super - based off original ibmr input and should be standard across alts.
 outz <- readRDS(file.path(output_path, "../original_ibmr_output.rds"))
 input_path <- here::here("data/data_raw/demo_inputs")
 FWS.abundance<-read.table(file.path(input_path,'FWS.abundance_LCME.txt'),header=F)
