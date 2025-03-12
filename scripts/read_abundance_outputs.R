@@ -26,25 +26,38 @@ df_abund <- cbind(df_abund0, alts) %>%
 cols <- c("mean", "min", "max", "q0.025","q0.05", "q0.25","q0.5", "q0.75", "q0.9", "q0.975", "year", "alt")
 colnames(df_abund) <- cols
 
-write_csv(df_abund, file.path(output_path, "summarized_output/abundance_all_alts.csv"))
+write_csv(df_abund, file.path(output_path, "../summarized_output/abundance_all_alts.csv"))
 
 # Plot
+abundance1 <- read_csv(here(output_path, "../summarized_output/abundance_meanmin_all_alts.csv"))
 
-abundance_sum <- df_abund %>%
-  group_by(alt) %>%
-  summarize(meanmin = mean(q0.05)) %>%
-  mutate(alt = forcats::fct_relevel(alt,  c("StatusQuo", "MaxDS_Even","MaxDS_Hist", "SummerFall_Even", "Summer_Even", "Summer_Even_AltSMSCG",
-                                     "SummerFall_Hist", "Summer_Hist", "June", "MaxWater", "MaxWater_noSMSCG"))) 
-
-(plot_0.05abund <- ggplot(abundance_sum) + 
-  geom_point(aes(x =alt, y = meanmin), size = 3, shape = 2)+
-  labs(y = "Mean q0.05 Abundance")+ 
+(plot_abund1 <- ggplot(abundance1) + 
+  geom_point(aes(x =Alternatives, y = MeanMinAbundance), size = 3, shape = 17, color = "navy")+
+  labs(y = "Mean Minimum Abundance")+ 
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90, hjust = 0.99),
         axis.title = element_text(size = 12),
         axis.text = element_text(size = 12),
         axis.title.x = element_blank()))
 
-png(filename = file.path(plot_path, "abundance.png"), width = 6, height = 6, units = "in", res = 300)
-plot_0.05abund
+png(filename = file.path(plot_path, "abundance_AdjHist.png"), width = 6, height = 6, units = "in", res = 300)
+plot_abund1
+dev.off()  
+
+
+
+
+abundance2 <- read_csv(here(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
+
+(plot_abund2 <- ggplot(abundance2) + 
+    geom_point(aes(x =Alternatives, y = MeanMinAbundance), size = 4, shape = 18, color = "steelblue4")+
+    labs(y = "Mean Minimum Abundance")+ 
+    theme_bw()+
+    theme(axis.text.x = element_text(angle = 90, hjust = 0.99),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()))
+
+png(filename = file.path(plot_path, "abundance_2022MED.png"), width = 6, height = 6, units = "in", res = 300)
+plot_abund2
 dev.off()  
