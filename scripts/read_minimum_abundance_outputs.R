@@ -6,13 +6,16 @@ library(tidyr)
 library(here)
 library(purrr)
 
+rm(list=ls(all=TRUE))
+
 # change this depending on which output used
-output_path <- here::here("output/model_outputs/outputs_2022MED")
+output_path <- here::here("output/model_outputs/outputs_AdjHist")
+# output_path <- here::here("output/model_outputs/outputs_2022MED")
 
 # Read all files and filter to rds files
 fp_abund <- dir(here(output_path), full.names = TRUE)
 fp_abund2 <- data.frame(fp_abund) %>%
-  filter(grepl("SMSCGfixed_2022MED.rds", fp_abund)) # change this depending on which output used
+  filter(grepl("SMSCGfixed", fp_abund))
 
 fp_abund_char <- as.character(fp_abund2$fp_abund)
 # List of rds output
@@ -23,6 +26,12 @@ fp_abund_char
 names(ls_abund) <- c("StatusQuo", "June", "MaxWater","MaxWater_noSMSCG","MaxDS_Even","MaxDS_Hist",
                      "SummerFall_Even","Summer_Even","Summer_Even_AltSMSCG","SummerFall_Hist","Summer_Hist")
 
+# Test
+# matrix_data = ls_abund[["StatusQuo"]]
+# super<-median(c(apply(matrix_data[1:20,1,],1,median,na.rm=T)/FWS.abundance[1:20,1], # get ratio of simulated abundance to LCME-estimated abundance
+#                 apply(matrix_data[1:20,2,],1,median,na.rm=T)/FWS.abundance[1:20,2],
+#                 apply(matrix_data[1:20,3,],1,median,na.rm=T)/FWS.abundance[1:20,3],
+#                 apply(matrix_data[1:20,4,],1,median,na.rm=T)/FWS.abundance[1:20,4]))
 
 # Needed for fcn below
 input_path <- here::here("data/data_raw/demo_inputs")
@@ -44,9 +53,10 @@ get_column_minimum <- function(matrix_data) {
                     apply(matrix_data[1:20,2,],1,median,na.rm=T)/FWS.abundance[1:20,2],
                     apply(matrix_data[1:20,3,],1,median,na.rm=T)/FWS.abundance[1:20,3],
                     apply(matrix_data[1:20,4,],1,median,na.rm=T)/FWS.abundance[1:20,4]))
+
     
     # Store the minimum value in the min_values vector
-    min_values[i] <- min(vector)/super[1]
+    min_values[i] <- min(vector)
   }
   
   return(min_values)
@@ -54,7 +64,7 @@ get_column_minimum <- function(matrix_data) {
 
 # Grab minimum across simulations
 outz_StatusQuo<- get_column_minimum(ls_abund[["StatusQuo"]])
-min_abundance_table <- data.frame(Alternatives=
+min_abundance_table2 <- data.frame(Alternatives=
                                     c("StatusQuo", "June", "MaxWater","MaxWater_noSMSCG","MaxDS_Even","MaxDS_Hist",
                                       "SummerFall_Even","Summer_Even","Summer_Even_AltSMSCG",
                                       "SummerFall_Hist","Summer_Hist")
@@ -90,9 +100,9 @@ summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
 
 
 # USBR hydro
-lam <- read_csv(here("output/model_outputs/summarized_output/mean_lambda_all_alts_long_2022MED.csv"))
-lambda_vals <- lam %>% filter(description == "mean_all_years")
-min_abundance_table$lambda <- lambda_vals$lambdaval
+lam2 <- read_csv(here("output/model_outputs/summarized_output/mean_lambda_all_alts_long_2022MED.csv"))
+lambda_vals2 <- lam2 %>% filter(description == "mean_all_years")
+min_abundance_table$lambda <- lambda_vals2$lambdaval
 
 summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
 
