@@ -26,17 +26,15 @@ fp_abund_char
 names(ls_abund) <- c("StatusQuo", "June", "MaxWater","MaxWater_noSMSCG","MaxDS_Even","MaxDS_Hist",
                      "SummerFall_Even","Summer_Even","Summer_Even_AltSMSCG","SummerFall_Hist","Summer_Hist")
 
-# Test
-# matrix_data = ls_abund[["StatusQuo"]]
-# super<-median(c(apply(matrix_data[1:20,1,],1,median,na.rm=T)/FWS.abundance[1:20,1], # get ratio of simulated abundance to LCME-estimated abundance
-#                 apply(matrix_data[1:20,2,],1,median,na.rm=T)/FWS.abundance[1:20,2],
-#                 apply(matrix_data[1:20,3,],1,median,na.rm=T)/FWS.abundance[1:20,3],
-#                 apply(matrix_data[1:20,4,],1,median,na.rm=T)/FWS.abundance[1:20,4]))
-
-# Needed for fcn below
+# Calculate super
+outz <- readRDS(file.path(output_path, "../original_ibmr_output.rds"))
 input_path <- here::here("data/data_raw/demo_inputs")
 FWS.abundance<-read.table(file.path(input_path,'FWS.abundance_LCME.txt'),header=F)
 FWS.abundance<-cbind(FWS.abundance[,2],FWS.abundance[,3],FWS.abundance[,4],FWS.abundance[,5])
+super<-median(c(apply(outz[1:20,1,],1,median,na.rm=T)/FWS.abundance[1:20,1], # get ratio of simulated abundance to LCME-estimated abundance
+                apply(outz[1:20,2,],1,median,na.rm=T)/FWS.abundance[1:20,2],
+                apply(outz[1:20,3,],1,median,na.rm=T)/FWS.abundance[1:20,3],
+                apply(outz[1:20,4,],1,median,na.rm=T)/FWS.abundance[1:20,4]))
 
 # Define a function to get the minimum from a specific column
 get_column_minimum <- function(matrix_data) {
@@ -48,15 +46,8 @@ get_column_minimum <- function(matrix_data) {
     # Get the specific vector (column)
     vector <- matrix_data[(1:nrow(matrix_data)),4,i]
     
-    # calculate super
-    super<-median(c(apply(matrix_data[1:20,1,],1,median,na.rm=T)/FWS.abundance[1:20,1], # get ratio of simulated abundance to LCME-estimated abundance
-                    apply(matrix_data[1:20,2,],1,median,na.rm=T)/FWS.abundance[1:20,2],
-                    apply(matrix_data[1:20,3,],1,median,na.rm=T)/FWS.abundance[1:20,3],
-                    apply(matrix_data[1:20,4,],1,median,na.rm=T)/FWS.abundance[1:20,4]))
-
-    
     # Store the minimum value in the min_values vector
-    min_values[i] <- min(vector)
+    min_values[i] <- min(vector)/super[1]
   }
   
   return(min_values)
@@ -64,7 +55,7 @@ get_column_minimum <- function(matrix_data) {
 
 # Grab minimum across simulations
 outz_StatusQuo<- get_column_minimum(ls_abund[["StatusQuo"]])
-min_abundance_table2 <- data.frame(Alternatives=
+min_abundance_table <- data.frame(Alternatives=
                                     c("StatusQuo", "June", "MaxWater","MaxWater_noSMSCG","MaxDS_Even","MaxDS_Hist",
                                       "SummerFall_Even","Summer_Even","Summer_Even_AltSMSCG",
                                       "SummerFall_Hist","Summer_Hist")
@@ -84,6 +75,7 @@ min_abundance_table2 <- data.frame(Alternatives=
 
 
 # Export out results as csv
+# write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
 write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
 
 
