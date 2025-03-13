@@ -39,7 +39,7 @@ x2_data <- AltStatusQuo_data %>% select(Date,X2_current) %>% mutate(Scenario="St
   bind_rows((AltSummer_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="Summer_Hist"))) %>%
   bind_rows((AltSummerFall_Even_data %>% select(Date,X2_current) %>% mutate(Scenario="SummerFall_Even"))) %>%
   bind_rows((AltSummerFall_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="SummerFall_Hist"))) %>%
-  bind_rows((AltSummerFall_Hist_data %>% select(Date,X2_current) %>% mutate(Scenario="MaxWater_noSMSCG")))
+  bind_rows((AltMaxWater_noSMSCG_data %>% select(Date,X2_current) %>% mutate(Scenario="MaxWater_noSMSCG")))
   
 #####
 # Load Belden Landing salinity data from CalSim
@@ -53,7 +53,7 @@ BD_data <- AltStatusQuo_data %>% select(Date,BD_EC_current) %>% mutate(Scenario=
   bind_rows((AltSummer_Hist_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="Summer_Hist"))) %>%
   bind_rows((AltSummerFall_Even_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="SummerFall_Even"))) %>%
   bind_rows((AltSummerFall_Hist_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="SummerFall_Hist"))) %>%
-  bind_rows((AltSummerFall_Hist_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="MaxWater_noSMSCG"))) %>%
+  bind_rows((AltMaxWater_noSMSCG_data %>% select(Date,BD_EC_current) %>% mutate(Scenario="MaxWater_noSMSCG"))) %>%
   mutate(Month=month(Date)) %>%
   #Based on looking at the data, will use temperature at 25 for now and assume this is specific conductance
   mutate(BD_salinity = wql::ec2pss(.data$BD_EC_current / 1000, t = 25))
