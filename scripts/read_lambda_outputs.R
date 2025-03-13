@@ -11,8 +11,8 @@ library(tidyr)
 library(here)
 library(purrr)
 
-# output_path <- here::here("output/model_outputs/outputs_AdjHist")
-output_path <- here::here("output/model_outputs/outputs_2022MED/")
+output_path <- here::here("output/model_outputs/outputs_AdjHist")
+#output_path <- here::here("output/model_outputs/outputs_2022MED/")
 plot_path <- here::here("output/figures/")
 
 # Read all files and filter to lambda mean files
@@ -43,8 +43,8 @@ long <- pivot_longer(lammn_df, cols = StatusQuo:Summer_Hist, names_to = "alt", v
          alt = forcats::fct_relevel(alt,  c("StatusQuo", "MaxDS_Even","MaxDS_Hist", "SummerFall_Even", "Summer_Even", "Summer_Even_AltSMSCG",
                                             "SummerFall_Hist", "Summer_Hist", "June", "MaxWater", "MaxWater_noSMSCG"))) 
 
-# write_csv(long, here(output_path, "../summarized_output/mean_lambda_all_alts_long_2022MED.csv"))
-
+#write_csv(long, here(output_path, "../summarized_output/mean_lambda_all_alts_long_2022MED.csv"))
+write_csv(long, here(output_path, "../summarized_output/mean_lambda_all_alts_long.csv"))
 
 # Plot lambda
 (lambda_plot <- ggplot() + 

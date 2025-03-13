@@ -10,7 +10,7 @@ rm(list=ls(all=TRUE))
 
 # change this depending on which output used
 output_path <- here::here("output/model_outputs/outputs_AdjHist")
-# output_path <- here::here("output/model_outputs/outputs_2022MED")
+#output_path <- here::here("output/model_outputs/outputs_2022MED")
 
 # Read all files and filter to rds files
 fp_abund <- dir(here(output_path), full.names = TRUE)
@@ -87,8 +87,8 @@ min_abundance_table$lambda <- lambda_vals$lambdaval
 summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
 
 # Export out results as csv
-# write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
 write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
+#write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
 
 
 # USBR hydro
@@ -100,7 +100,7 @@ summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
 
 # Export out results as csv
 # write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
-write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
+#write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
 
 
 
