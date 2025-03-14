@@ -49,7 +49,7 @@ dev.off()
           axis.text = element_text(size = 12),
           axis.title.x = element_blank()))
 
-png(filename = file.path(plot_path, "abundance_2022MED.png"), width = 7.5, height = 6, units = "in", res = 300)
+png(filename = file.path(plot_path, "abundance_2022MED.png"), width = 7.5, height = 7, units = "in", res = 300)
 plot_abund2
 dev.off()  
 
