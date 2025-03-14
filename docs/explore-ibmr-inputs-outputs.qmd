@@ -1,0 +1,202 @@
+---
+title: "Explore IBMR Data"
+format: html
+editor: visual
+---
+
+
+Explore X2 and Zooplankton inputs, lambda and minimum abundance outputs from SFHA 2025 IBMR effort
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r, include = FALSE}
+## Read in packages
+rm(list=ls(all=TRUE))
+library(tidyverse)
+library(here)
+library(plotly)
+```
+
+
+```{r, include = FALSE}
+## Set paths
+input_data_path <- here::here("data/data_processed")
+output_path <- here::here("output/model_outputs/")
+plot_path <- here::here("output/figures/")
+```
+
+```{r, include = FALSE}
+## Read in data for all
+x2a <- read_csv(here(input_data_path, "IBMR_X2_SF2025_input.csv")) %>%
+  mutate(hydro = "AdjHist")
+zoopa <- read_csv(here(input_data_path, "zoop_scalar_output_SF2025_2025-03-13.csv"))%>%
+  mutate(hydro = "AdjHist")
+x2b <- read_csv(here(input_data_path, "IBMR_X2_SF2022MED_input.csv"))%>%
+  mutate(hydro = "2022MED")
+zoopb <- read_csv(here(input_data_path, "zoop_scalar_output_SF2022MED_2025-03-13.csv"))%>%
+  mutate(hydro = "2022MED")
+wy <- read_csv(here(input_data_path, "wytype_may.csv")) %>%
+  mutate(year = WY) %>% select(-WY)
+outputa <- read_csv(here(output_path, "summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))%>%
+  mutate(hydro = "AdjHist")
+outputb <- read_csv(here(output_path, "summarized_output/abundance_meanmin_all_alts_2022MED.csv"))%>%
+  mutate(hydro = "2022MED")
+```
+
+::: {.panel-tabset}
+## X2
+```{r, include = FALSE}
+# Combine data
+x2 <- bind_rows(x2a, x2b)
+
+x2_long <- x2 %>%
+  pivot_longer(cols = 3:14, values_to = "x2", names_to = "month") %>%
+  mutate(month = as.numeric(month)) %>%
+  mutate(month_abb = factor(month.abb[month], levels = month.abb)) %>%
+  mutate(scenario = forcats::fct_relevel(scenario,  c("StatusQuo", "MaxDS_Even","MaxDS_Hist", "SummerFall_Even", "Summer_Even", "Summer_Even_AltSMSCG",
+                                                      "SummerFall_Hist", "Summer_Hist", "June", "MaxWater", "MaxWater_noSMSCG"))) 
+
+x2_summerfall <- x2_long %>% filter(month > 5 & month<11)
+```
+
+### X2 by year, alternative, and hydrology
+```{r, include = FALSE}
+plot_x2 <- ggplot() +
+    # geom_point(data = x2_summerfall, aes(x = year, y = x2, color = scenario, shape = scenario))+
+    geom_line(data = x2_summerfall, aes(x = year, y = x2, color = scenario, linetype = scenario), alpha = 0.9)+
+    # scale_shape_manual(values = c(20, 0, 18, 6, 8, 9, 10, 23, 1, 13, 14))+
+    viridis::scale_color_viridis(discrete = TRUE, option = "turbo") + 
+    scale_x_continuous(breaks = seq(1995, 2014, 1))+ 
+    scale_y_continuous(breaks = seq(55, 95, 10)) + 
+    facet_grid(month_abb~hydro) + 
+    labs(y = "X2 (km)")+
+    theme_bw() +
+    theme(axis.text  = element_text(size = 11),
+          axis.text.x = element_text(angle = 90))
+```
+
+```{r , echo = FALSE}
+ggplotly(plot_x2)
+```
+
+## Zooplankton
+```{r , include = FALSE}
+### Combine data 
+zoop <- bind_rows(zoopa, zoopb)
+zoop_long <- zoop %>%
+  pivot_longer(cols = starts_with("sal"),
+               names_to = "alt",
+               values_to = "zoop") %>%
+  mutate(alt = str_remove(alt, "_median"),
+         alt = str_remove(alt, "sal_")) %>%
+  left_join(wy)
+```
+
+```{r, include = FALSE}
+### Summarize by year
+zoop_summ <- zoop_long %>%
+  group_by(year, IBMR, hydro, alt, wytype) %>% 
+  summarize(mnzoop = mean(zoop, na.rm = TRUE),
+            sumzoop = sum(zoop, na.rm = TRUE)) %>%
+  mutate(actionyr = if_else(wytype %in% c("AN", "W"), "*", "")) %>%
+  filter(alt !="base") %>%
+  rename(taxa = IBMR)
+```
+
+### Zooplankton by year (all years and alts)
+
+*Adjusted Historical Hydrology*
+
+```{r, echo = FALSE}
+ggplotly(ggplot(zoop_summ %>%filter(hydro == "AdjHist")) +
+  geom_col(aes(x = factor(year), y = sumzoop, fill = taxa)) +
+  geom_text(aes(x = factor(year), y = sumzoop + 5, label = actionyr))+
+  labs(title = "AdjHist")+
+  viridis::scale_fill_viridis(option = "turbo", discrete = TRUE)+
+  facet_wrap(~alt)+
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)))
+```
+
+*2022MED Hydrology*
+
+```{r, echo = FALSE}
+ggplotly(ggplot(zoop_summ %>%filter(hydro == "2022MED")) +
+  geom_col(aes(x = factor(year), y = sumzoop, fill = taxa)) +
+  geom_text(aes(x = factor(year), y = sumzoop + 5, label = actionyr))+
+  facet_wrap(~alt)+
+  labs(title = "2022MED")+
+  viridis::scale_fill_viridis(option = "turbo", discrete = TRUE)+
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)))
+```
+
+### Zooplankton by year (no 1997; all alts)
+
+*Adjusted Historical Hydrology*
+
+```{r, echo = FALSE}
+ggplotly(ggplot(zoop_summ %>%filter(hydro == "AdjHist", year != 1997)) +
+   geom_col(aes(x = factor(year), y = sumzoop, fill = taxa)) +
+   geom_text(aes(x = factor(year), y = sumzoop + 5, label = actionyr))+
+   labs(title = "AdjHist no 1997")+
+   viridis::scale_fill_viridis(option = "turbo", discrete = TRUE)+
+   facet_wrap(~alt)+
+   theme_bw() +
+   theme(axis.text.x = element_text(angle = 90)))
+```
+
+*2022MED Hydrology*
+
+```{r, echo = FALSE}
+ggplotly(ggplot(zoop_summ %>%filter(hydro == "2022MED", year !=1997)) +
+    geom_col(aes(x = factor(year), y = sumzoop, fill = taxa)) +
+    geom_text(aes(x = factor(year), y = sumzoop + 5, label = actionyr))+
+    facet_wrap(~alt)+
+    labs(title = "2022MED no 1997")+
+    viridis::scale_fill_viridis(option = "turbo", discrete = TRUE)+
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90)))
+```
+
+
+## Final Outputs
+
+```{r, include = FALSE}
+# Combine two hydros
+output <- bind_rows(outputa, outputb)
+```
+
+### Lambda across alternatives and hydrologies
+```{r, echo = FALSE}
+ggplotly(ggplot(output) + 
+    geom_point(aes(x =Alternatives, y = lambda, shape = hydro, color = hydro), size = 3)+
+    geom_hline(yintercept = 1, linetype = "dashed") + 
+    # geom_label(aes(x = Alternatives, y = MeanMinAbundance + 200000, label = round(MeanMinAbundance)), size = 3.5) + 
+      scale_color_manual(values = c("navy", "steelblue4"))+
+    labs(y = "Lambda")+ 
+    theme_bw()+
+    theme(axis.text.x = element_text(angle = 90, hjust = 0.99),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()))
+```
+
+### Minimum Abundance across alternatives and hydrologies
+```{r, echo = FALSE}
+ggplotly(ggplot(output) + 
+    geom_point(aes(x =Alternatives, y = MeanMinAbundance, shape = hydro, color = hydro), size = 3)+
+    geom_hline(yintercept = 500000, linetype = "dashed") + 
+    # geom_label(aes(x = Alternatives, y = MeanMinAbundance + 200000, label = round(MeanMinAbundance)), size = 3.5) + 
+      scale_color_manual(values = c("navy", "steelblue4"))+
+    labs(y = "Mean Minimum Abundance")+ 
+    theme_bw()+
+    theme(axis.text.x = element_text(angle = 90, hjust = 0.99),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()))
+```
+
+:::
