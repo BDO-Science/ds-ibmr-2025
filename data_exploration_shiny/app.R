@@ -9,12 +9,16 @@
 
 library(shiny)
 library(tidyverse)
+library(here)
+library(rsconnect)
 
 # Load 
-x2a <- read_csv(here("data/data_processed/IBMR_X2_SF2025_input.csv")) %>%
+input_data_path <- here::here("data/data_processed")
+
+x2a <- read_csv(here(input_data_path,"IBMR_X2_SF2025_input.csv")) %>%
     mutate(hydro = "AdjHist")
 
-x2b <- read_csv(here("data/data_processed/IBMR_X2_SF2022MED_input.csv")) %>%
+x2b <- read_csv(here(input_data_path,"IBMR_X2_SF2022MED_input.csv")) %>%
     mutate(hydro = "2022MED")
 
 x2 <- bind_rows(x2a, x2b)
@@ -26,8 +30,25 @@ x2_long <- x2 %>%
     mutate(scenario = forcats::fct_relevel(scenario,  c("StatusQuo", "MaxDS_Even","MaxDS_Hist", "SummerFall_Even", "Summer_Even", "Summer_Even_AltSMSCG",
                                                         "SummerFall_Hist", "Summer_Hist", "June", "MaxWater", "MaxWater_noSMSCG"))) 
 
+zoopa <- read_csv(here(input_data_path, "zoop_scalar_output_SF2025_2025-03-13.csv"))%>%
+    mutate(hydro = "AdjHist")
+zoopb <- read_csv(here(input_data_path, "zoop_scalar_output_SF2022MED_2025-03-13.csv"))%>%
+    mutate(hydro = "2022MED")
+wy <- read_csv(here(input_data_path, "wytype_may.csv")) %>%
+    mutate(year = WY) %>% select(-WY)
 
-# Define UI for application that draws a histogram
+### Combine data 
+zoop <- bind_rows(zoopa, zoopb)
+zoop_long <- zoop %>%
+    pivot_longer(cols = starts_with("sal"),
+                 names_to = "alt",
+                 values_to = "zoop") %>%
+    mutate(alt = str_remove(alt, "_median"),
+           alt = str_remove(alt, "sal_")) %>%
+    left_join(wy) %>%
+    mutate(month_abb = factor(month.abb[month], levels = month.abb))
+
+# Define UI for application 
 ui <- fluidPage(
 
     # Application title
@@ -59,12 +80,23 @@ ui <- fluidPage(
                                "Select Hydrology:", 
                                choices = list("Historical Adjusted Hydrology" = "AdjHist", 
                                               "2022 Median" = "2022MED"), 
-                               selected = c("AdjHist"))
+                               selected = c("AdjHist")),
+            selectInput("selected_zoop", 
+                        "Select an zooplankton taxa:", 
+                        choices = c("acartela","allcopnaup","daphnia","eurytem","limno","othcalad","othcaljuv","othclad",
+                                    "othcyc","other","pdiapfor","pdiapjuv"), 
+                        selected = "pdiapfor"),
+            selectInput("selected_region", 
+                        "Select IBMR region for zoop:", 
+                        choices = c("Confluence","Suisun Marsh","NE Suisun","SE Suisun","NW Suisun","SW Suisun"), 
+                        selected = "Suisun Marsh")
         ),
 
         # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("x2plot", width = "1200px", height = "1000px")
+        mainPanel(tabsetPanel(tabPanel("X2 Plot",plotOutput("x2plot", width = "1200px", height = "1000px")),
+                              tabPanel("Zoop Plot",plotOutput("zoopplot", width = "1200px", height = "1000px"))
+                              
+           )
         )
     )
 )
@@ -94,6 +126,28 @@ server <- function(input, output) {
                       legend.key.size = unit(1.2, "cm")))
     })
     
+    output$zoopplot <- renderPlot({
+        print(ggplot() +
+                  geom_line(data = zoop_long %>% 
+                                filter(IBMR == input$selected_zoop) %>%
+                                filter(region == input$selected_region) %>%
+                                filter(month %in% c(input$month_slider[1]:input$month_slider[2])) %>%
+                                filter(alt %in% input$options) %>%
+                                filter(hydro %in% c(input$hydrology)),
+                            aes(x = year, y = zoop, color = alt, linetype = alt), alpha = 0.9)+
+                  viridis::scale_color_viridis(discrete = TRUE, option = "turbo") + 
+                  scale_x_continuous(breaks = seq(1995, 2014, 1))+ 
+                  facet_wrap(month_abb~hydro, nrow = length(c(input$month_slider[1]:input$month_slider[2])),scales="free") + 
+                  labs(y = "scalar multiplier")+
+                  theme_bw() +
+                  theme(axis.text = element_text(size = 14),  # Increase tick mark font size
+                        panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+                        legend.text=element_text(size=14),
+                        legend.title=element_text(size=14),
+                        axis.title.x = element_text(size=14),
+                        axis.title.y = element_text(size=14),
+                        legend.key.size = unit(1.2, "cm")))
+    })
 }
 
 # Run the application 
