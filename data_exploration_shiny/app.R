@@ -118,7 +118,9 @@ server <- function(input, output) {
             labs(y = "X2 (km)")+
             theme_bw() +
                 theme(axis.text = element_text(size = 14),  # Increase tick mark font size
+                      axis.text.x = element_text(angle = 90), 
                       panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+                      strip.text = element_text(size = 14),
                       legend.text=element_text(size=14),
                       legend.title=element_text(size=14),
                       axis.title.x = element_text(size=14),
@@ -141,6 +143,8 @@ server <- function(input, output) {
                   labs(y = "scalar multiplier")+
                   theme_bw() +
                   theme(axis.text = element_text(size = 14),  # Increase tick mark font size
+                        axis.text.x = element_text(angle = 90), 
+                        strip.text = element_text(size =14),
                         panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
                         legend.text=element_text(size=14),
                         legend.title=element_text(size=14),
