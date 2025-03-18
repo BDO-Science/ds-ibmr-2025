@@ -272,7 +272,87 @@ cost_data_mean <- cost_data_sum %>% group_by(Scenario) %>%
 
 write.csv(cost_data_mean,file.path(path_hydro,"WaterCostCalculation_DWRAdjustedHydro.csv"))
 
+##########################
 # Export calculation
-data_CVP <- data_may %>% filter(month %in% c(6:10)) %>% filter(WY_type %in% c("Wet","Above Normal")) 
+data_CVP_currentcontractyr <- combined_data %>%
+  group_by(scenario) %>%
+  arrange(scenario, Date) %>%
+  mutate(May_Value = ifelse(month == month_of_interest, WY_type_SAC, NA)) %>%
+  fill(May_Value, .direction = "down") %>%
+  mutate(May_Value = ifelse(month %in% c(10,11,12,1,2,3,4), NA, May_Value)) %>%
+  fill(May_Value, .direction = "up") %>%
+  mutate(WY_type = case_when(
+    May_Value==1 ~ "Wet",
+    May_Value==2 ~ "Above Normal",
+    May_Value==3 ~ "Below Normal",
+    May_Value==4 ~ "Dry",
+    May_Value==5 ~ "Critically Dry"
+  )) %>% mutate(WY = ifelse(month >=10, year(Date)+1, year(Date))) %>% 
+  mutate(contract_CVP_WY_type=lag(WY_type,n=5,default=NA)) %>% 
+  #Fill NA and move up 
+  fill(contract_CVP_WY_type, .direction = "up") %>%
+  # Remove the earlier months without a full contract year and those with NA values
+  filter(Date > as.Date("1922-02-28")) %>% 
+  mutate(prev_contract_CVP_WY_type=lag(contract_CVP_WY_type,n=12,default=NA)) %>%
+  mutate(actionyr_or_after=ifelse(contract_CVP_WY_type %in% c("Wet","Above Normal")|prev_contract_CVP_WY_type %in% c("Wet","Above Normal"),"yes","no")) %>%
+  # Convert to TAF
+  mutate(CVP_DeltaExport_TAF = 0.0595*CVP_DeltaExport) %>%
+  # Remove non-action year or those not +1
+  filter(actionyr_or_after=="yes") %>% 
+  # add contract yr
+  mutate(contractyr_name=lag(WY,n=5,default=NA)) %>% 
+  fill(contractyr_name, .direction = "up") %>%
+  # check that there's no NA
+  filter(!is.na(contractyr_name)) %>%
+  group_by(scenario, contractyr_name) %>%
+  summarise(CVP_DeltaExport_TAF=sum(CVP_DeltaExport_TAF)) %>%
+  # average across scenarios
+  group_by(scenario) %>% summarise(CVP_DeltaExport_TAF=mean(CVP_DeltaExport_TAF))
 
-  
+data_SWP_currentcontractyr <- combined_data %>%
+  group_by(scenario) %>%
+  arrange(scenario, Date) %>%
+  mutate(May_Value = ifelse(month == month_of_interest, WY_type_SAC, NA)) %>%
+  fill(May_Value, .direction = "down") %>%
+  mutate(May_Value = ifelse(month %in% c(10,11,12,1,2,3,4), NA, May_Value)) %>%
+  fill(May_Value, .direction = "up") %>%
+  mutate(WY_type = case_when(
+    May_Value==1 ~ "Wet",
+    May_Value==2 ~ "Above Normal",
+    May_Value==3 ~ "Below Normal",
+    May_Value==4 ~ "Dry",
+    May_Value==5 ~ "Critically Dry"
+  )) %>% mutate(WY = ifelse(month >=10, year(Date)+1, year(Date))) %>% 
+  mutate(contract_SWP_WY_type = ifelse(month == month_of_interest, WY_type, NA)) %>%
+  fill(contract_SWP_WY_type, .direction = "down") %>%
+  mutate(contract_SWP_WY_type = ifelse(month %in% c(1,2,3,4), NA, contract_SWP_WY_type)) %>%
+  fill(contract_SWP_WY_type, .direction = "up") %>%
+  # Remove the earlier months without a full contract year and those with NA values
+  filter(Date >= as.Date("1922-01-31")) %>% 
+  mutate(prev_contract_SWP_WY_type=lag(contract_SWP_WY_type,n=12,default=NA)) %>%
+  mutate(actionyr_or_after=ifelse(contract_SWP_WY_type %in% c("Wet","Above Normal")|prev_contract_SWP_WY_type %in% c("Wet","Above Normal"),"yes","no")) %>%
+  # Convert to TAF
+  mutate(SWP_DeltaExport_TAF = 0.0595*SWP_DeltaExport) %>%
+  # Remove non-action year or those not +1
+  filter(actionyr_or_after=="yes") %>% 
+  # add contract yr
+  mutate(contractyr_name=year) %>% 
+  # check that there's no NA
+  filter(!is.na(contractyr_name)) %>%
+  group_by(scenario, contractyr_name) %>%
+  summarise(SWP_DeltaExport_TAF=sum(SWP_DeltaExport_TAF)) %>%
+  # average across scenarios
+  group_by(scenario) %>% summarise(SWP_DeltaExport_TAF=mean(SWP_DeltaExport_TAF))
+
+
+data_contract_yr_combined <- data_CVP_currentcontractyr %>% left_join(data_SWP_currentcontractyr)
+
+write.csv(data_contract_yr_combined,file.path(path_hydro,"ContractYearExportCalculation_DWRAdjustedHydro.csv"))
+
+
+# Code to check that the trends report and this calc is the same if I consider 100yr total
+#test<- data_may %>% filter(Date >= as.Date("1922-01-31")) %>% group_by(year,scenario) %>% # Convert to TAF
+#  mutate(SWP_DeltaExport_TAF = 0.0595*SWP_DeltaExport) %>%
+#  summarise(SWP_DeltaExport_TAF=sum(SWP_DeltaExport_TAF)) %>%
+#  # average across scenarios
+#  group_by(scenario) %>% summarise(SWP_DeltaExport_TAF=mean(SWP_DeltaExport_TAF))
