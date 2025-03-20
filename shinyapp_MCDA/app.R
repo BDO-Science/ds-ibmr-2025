@@ -103,8 +103,8 @@ server <- function(input, output, session) {
                                          Objective == "Shasta_storage" ~ input$O7_weight,
                                          Objective == "Oroville_storage" ~ input$O8_weight)) %>%
             mutate(score_obj = obj_weight*Value) %>% group_by(Alternative,Hydrology) %>%
-            summarise(comp_score = sum(score_obj)) %>% mutate(Hypo_weight = case_when(Hydrology == "AdjustedHist" ~ 0,
-                                                                                    Hydrology == "2022MED" ~ 1.0))
+            summarise(comp_score = sum(score_obj)) %>% mutate(Hypo_weight = case_when(Hydrology == "AdjustedHist" ~ 1.0,
+                                                                                    Hydrology == "2022MED" ~ 0))
     })
     
     output$Plot <- renderPlot({
