@@ -20,10 +20,10 @@ consequence_table_std <- consequence_table %>%
            CVP_export=(CVP_export-min(consequence_table$CVP_export))/(max(consequence_table$CVP_export)-min(consequence_table$CVP_export)),
            SWP_export=(SWP_export-min(consequence_table$SWP_export))/(max(consequence_table$SWP_export)-min(consequence_table$SWP_export)),
            Redds_dewatered=(Redds_dewatered-max(consequence_table$Redds_dewatered))/(min(consequence_table$Redds_dewatered)-max(consequence_table$Redds_dewatered)),
-           Folsom_probability300TAF=(Folsom_probability300TAF-0)/(1-0),
-           DeltaHumanHealth=(DeltaHumanHealth-0)/(1-0),
-           Shasta_storage=(Shasta_storage-0)/(1-0),
-           Oroville_storage=(Oroville_storage-0)/(1-0))
+           Folsom_probability300TAF=(Folsom_probability300TAF-min(consequence_table$Folsom_probability300TAF))/(max(consequence_table$Folsom_probability300TAF)-min(consequence_table$Folsom_probability300TAF)),
+           DeltaHumanHealth=(DeltaHumanHealth-min(consequence_table$DeltaHumanHealth))/(max(consequence_table$DeltaHumanHealth)-min(consequence_table$DeltaHumanHealth)),
+           Shasta_storage=(Shasta_storage-min(consequence_table$Shasta_storage))/(max(consequence_table$Shasta_storage)-min(consequence_table$Shasta_storage)),
+           Oroville_storage=(Oroville_storage-min(consequence_table$Oroville_storage))/(max(consequence_table$Oroville_storage)-min(consequence_table$Oroville_storage)))
 
 # Specify the columns you want to gather
 columns_to_gather <- c("DeltaSmelt", "CVP_export","SWP_export","Redds_dewatered","Folsom_probability300TAF","DeltaHumanHealth",
