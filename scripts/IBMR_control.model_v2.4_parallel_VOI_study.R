@@ -53,11 +53,11 @@ wtr.yr<-c(1,1,1,1,1,1,4,4,2,3,3,1,4,5,4,3,1,3,4,5,5) # Sacto WY type wet = 1, cr
 # Set environmental variables to change, given management action #
 OMR.action <- T #2024 ROD ITP
 Temp.action <- F
-Food.spp.action <- T # specified as taxa-specific multiplier
-Move.manual.action <- T # specified by directly changing distributions 'by hand' # This is the X2-fish distribution relationship
+Food.spp.action <- F # specified as taxa-specific multiplier
+Move.manual.action <- F # specified by directly changing distributions 'by hand' # This is the X2-fish distribution relationship
 Secchi.action <- F
 
-action <- 'AltF74'
+action <- 'AltNoX2'
 
 move.act.mn <- matrix(NA,(n.years+1),12)
 Dist.act.array <- M.act.mult <- PD.mult <- secchi.act.array <- Temp.act.array <- X2.act.sal.array <- array(NA,dim=c((n.years+1),12,n.strata))
@@ -246,9 +246,32 @@ if (length(successful_runs) > 0) {
 }
 
 parallel_runtime <- difftime(Sys.time(), parallel_start, units = "mins")
+parallel_runtime
 #Time difference of 21.00134 mins
 
-saveRDS(outzp,file.path(output_path,'outz_AltF74_OMR_Dist_Food_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltF74_OMR_Dist_Food_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltF80_OMR_Dist_Food_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltS74_OMR_Dist_Food_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltNoX2_OMR_Dist_Food_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltS74F80_OMR_Dist_Food_IBMRv1.rds'))
+
+#saveRDS(outzp,file.path(output_path,'outz_AltF74_OMR_Food_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltF80_OMR_Food_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltS74_OMR_Food_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltNoX2_OMR_Food_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltS74F80_OMR_Food_IBMRv1.rds'))
+
+#saveRDS(outzp,file.path(output_path,'outz_AltF74_OMR_Dist_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltF80_OMR_Dist_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltS74_OMR_Dist_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltS74F80_OMR_Dist_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltNoX2_OMR_Dist_IBMRv1.rds'))
+
+#saveRDS(outzp,file.path(output_path,'outz_AltF74_OMR_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltF80_OMR_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltS74F80_OMR_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltS74_OMR_IBMRv1.rds'))
+#saveRDS(outzp,file.path(output_path,'outz_AltNoX2_OMR_IBMRv1.rds'))
 
 # Clean up
 # Reset future plan to sequential (default R, no parallelization)
