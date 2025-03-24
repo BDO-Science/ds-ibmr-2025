@@ -38,7 +38,7 @@ consequence_table_std_long <- consequence_table_std %>%
 #custom_colors_alt <- c("StatusQuo" = "#000000", "Alt F74" = "#E69F00",
  #                      "Alt S74" = "yellow4" , "Alt S74F80" = "#56B4E9","Alt NoX2"= "#999999")
 
-unique(consequence_table_std_long$Alternative)
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -55,26 +55,26 @@ ui <- fluidPage(
                         min = 0.00,
                         max = 1.00,
                         value = 0.50),
-            HTML("<strong>Note:</strong> Objective weights must add up to 1."),
+            HTML("<strong>Note:</strong> At least one objective need to have >0 score."),
             uiOutput("warning"),  # Dynamic warning output
-            h3("Objective Weights"),
-            numericInput("O1_weight", "1. Delta Smelt Persistence Weight", 0.125, min = 0.0, max = 1),
-            numericInput("O2_weight", "2. Water Supply - CVP Exports", 0.125, min = 0.0, max = 1),
-            numericInput("O3_weight", "3. Water Supply - SWP Exports", 0.125, min = 0.0, max = 1),
-            numericInput("O4_weight", "4. Winter-run Chinook redd dewatering", 0.125, min = 0.0, max = 1),
-            numericInput("O5_weight", "5. Steelhead and Fall-run Chinook (Folsom)", 0.125, min = 0.0, max = 1),
-            numericInput("O6_weight", "6. In-Delta Water Quality and Human Health", 0.125, min = 0.0, max = 1),
-            numericInput("O7_weight", "7. Coldwater Pool CVP (Shasta)", 0.125, min = 0.0, max = 1),
-            numericInput("O8_weight", "8. Coldwater Pool SWP (Oroville)", 0.125, min = 0.0, max = 1),
+            h3("Objective Scores"),
+            numericInput("O1_score", "1. Delta Smelt Persistence", 100, min = 0, max = 100),
+            numericInput("O2_score", "2. Water Supply - CVP Exports", 100, min = 0, max = 100),
+            numericInput("O3_score", "3. Water Supply - SWP Exports", 100, min = 0, max = 100),
+            numericInput("O4_score", "4. Winter-run Chinook redd dewatering", 100, min = 0, max = 100),
+            numericInput("O5_score", "5. Steelhead and Fall-run Chinook (Folsom)", 100, min = 0, max = 100),
+            numericInput("O6_score", "6. In-Delta Water Quality and Human Health", 100, min = 0, max = 100),
+            numericInput("O7_score", "7. Coldwater Pool CVP (Shasta)", 100, min = 0, max = 100),
+            numericInput("O8_score", "8. Coldwater Pool SWP (Oroville)", 100, min = 0, max = 100),
             h3("Hypothesis Information"),
             p("Hypothesis 1: Adjust Historical Hydrology"),
             p("Hypothesis 2: Climate Change adjusted based on 2022 median"),
-            HTML("<strong>Note:</strong> Actions would only occur in W or AN years. Old and Middle River + Suisun Marsh Salinity Control Gate actions are present across all alternatives unless noted otherwise."),
+            HTML("<strong>Note:</strong> Actions would only occur in W or AN years. Old and Middle River + Suisun Marsh Salinity Control Gate actions are present across all alternatives unless noted otherwise.")
         ),
         
         # Show a plot of the generated distribution
         mainPanel(tabsetPanel(tabPanel("Information",h3("Background"),
-                                       p("This effort is intended to aid federal and state agencies decide on how update the Delta Smelt Summer and Fall Habitat conservation measure described for the Long-Term Operation of the Central Valley Project and State Water Project in coordination with interested parties. The action would be for a single year (2025) and then revisited in 2026."),
+                                       p("This effort is intended to help federal and state agencies decide on how update the Delta Smelt Summer and Fall Habitat conservation measure described for the Long-Term Operation of the Central Valley Project and State Water Project in coordination with interested parties. The action would be for a single year (2025) and then revisited in 2026."),
                                        h3("How to use this page:"),
                                        h3("Models"),
                                        h4("CalSim3"),
@@ -84,7 +84,9 @@ ui <- fluidPage(
                                        h3("Alternatives")),
         tabPanel("Line Plot",plotOutput("Plot")),
         tabPanel("Utility Score Table",tableOutput("tableSum")),tabPanel("VOI",textOutput("VOI_calc1"),textOutput("VOI_calc2")),
-        tabPanel("Raw Consequence Table",tableOutput("tableRaw"))))
+        tabPanel("Raw Consequence Table",tableOutput("tableRaw")),
+        tabPanel("Normalized Consequence Table",tableOutput("tableNormal")),
+        tabPanel("Objective Weights",tableOutput("tableObjWeights"))))
     )
 )
 
@@ -92,20 +94,30 @@ ui <- fluidPage(
 
 # Define server logic required to do things
 server <- function(input, output, session) {
+    #Reactive objective weight
+    O1_weight <- reactive({input$O1_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
+    O2_weight <- reactive({input$O2_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
+    O3_weight <- reactive({input$O3_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
+    O4_weight <- reactive({input$O4_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
+    O5_weight <- reactive({input$O5_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
+    O6_weight <- reactive({input$O6_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
+    O7_weight <- reactive({input$O7_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
+    O8_weight <- reactive({input$O8_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
+    
     #Pull together line plot data
     line_plot_data <- reactive({consequence_table_std_long %>% 
-            mutate(obj_weight= case_when(Objective == "DeltaSmelt" ~ input$O1_weight,
-                                         Objective == "CVP_export" ~ input$O2_weight,
-                                         Objective == "SWP_export" ~ input$O3_weight,
-                                         Objective == "Redds_dewatered" ~ input$O4_weight, 
-                                         Objective == "Folsom_probability300TAF" ~ input$O5_weight,
-                                         Objective == "DeltaHumanHealth" ~ input$O6_weight,
-                                         Objective == "Shasta_storage" ~ input$O7_weight,
-                                         Objective == "Oroville_storage" ~ input$O8_weight)) %>%
+            mutate(obj_weight= case_when(Objective == "DeltaSmelt" ~ O1_weight(),
+                                         Objective == "CVP_export" ~ O2_weight(),
+                                         Objective == "SWP_export" ~ O3_weight(),
+                                         Objective == "Redds_dewatered" ~ O4_weight(), 
+                                         Objective == "Folsom_probability300TAF" ~ O5_weight(),
+                                         Objective == "DeltaHumanHealth" ~ O6_weight(),
+                                         Objective == "Shasta_storage" ~ O7_weight(),
+                                         Objective == "Oroville_storage" ~ O8_weight())) %>%
             mutate(score_obj = obj_weight*Value) %>% group_by(Alternative,Hydrology) %>%
             summarise(comp_score = sum(score_obj)) %>% mutate(Hypo_weight = case_when(Hydrology == "AdjustedHist" ~ 1.0,
-                                                                                    Hydrology == "2022MED" ~ 0))
-    })
+                                                                                    Hydrology == "2022MED" ~ 0)) })
+ 
     
     output$Plot <- renderPlot({
         #Plot here
@@ -126,52 +138,52 @@ server <- function(input, output, session) {
     })
     
     # Create final utility score table
-    cons_table_std_new <- reactive({consequence_table_std_long %>% mutate(obj_weight= case_when(Objective == "DeltaSmelt" ~ input$O1_weight,
-                                                                                    Objective == "CVP_export" ~ input$O2_weight,
-                                                                                    Objective == "SWP_export" ~ input$O3_weight,
-                                                                                    Objective == "Redds_dewatered" ~ input$O4_weight, 
-                                                                                    Objective == "Folsom_probability300TAF" ~ input$O5_weight,
-                                                                                    Objective == "DeltaHumanHealth" ~ input$O6_weight,
-                                                                                    Objective == "Shasta_storage" ~ input$O7_weight,
-                                                                                    Objective == "Oroville_storage" ~ input$O8_weight)) %>%
+    cons_table_std_new <- reactive({consequence_table_std_long %>% mutate(obj_weight= case_when(Objective == "DeltaSmelt" ~ O1_weight(),
+                                                                                    Objective == "CVP_export" ~ O2_weight(),
+                                                                                    Objective == "SWP_export" ~ O3_weight(),
+                                                                                    Objective == "Redds_dewatered" ~ O4_weight(), 
+                                                                                    Objective == "Folsom_probability300TAF" ~ O5_weight(),
+                                                                                    Objective == "DeltaHumanHealth" ~ O6_weight(),
+                                                                                    Objective == "Shasta_storage" ~ O7_weight(),
+                                                                                    Objective == "Oroville_storage" ~ O8_weight())) %>%
             mutate(score_obj = obj_weight*Value) %>% group_by(Alternative,Hydrology) %>%
             summarise(comp_score = sum(score_obj)) %>% mutate(hypo_weight = case_when(Hydrology == "AdjustedHist" ~ input$H1_weight,
                                                                                       Hydrology == "2022MED" ~ 1-input$H1_weight)) %>%
             mutate(comp_score_hyp = comp_score*hypo_weight) %>% ungroup() %>% group_by(Alternative) %>%
             summarise(CompositeScore = sum(comp_score_hyp))})
     
-    output$tableSum <- renderTable(cons_table_std_new() %>% arrange(desc(CompositeScore)))
+    output$tableSum <- renderTable({cons_table_std_new() %>% arrange(desc(CompositeScore))},digits=5)
     
     # Add VOI calculation tables
-    cons_table_reconfig <- reactive({consequence_table_std_long %>% mutate(obj_weight= case_when(Objective == "DeltaSmelt" ~ input$O1_weight,
-                                                                                                 Objective == "CVP_export" ~ input$O2_weight,
-                                                                                                 Objective == "SWP_export" ~ input$O3_weight,
-                                                                                                 Objective == "Redds_dewatered" ~ input$O4_weight, 
-                                                                                                 Objective == "Folsom_probability300TAF" ~ input$O5_weight,
-                                                                                                 Objective == "DeltaHumanHealth" ~ input$O6_weight,
-                                                                                                 Objective == "Shasta_storage" ~ input$O7_weight,
-                                                                                                 Objective == "Oroville_storage" ~ input$O8_weight))  %>%
+    cons_table_reconfig <- reactive({consequence_table_std_long %>% mutate(obj_weight= case_when(Objective == "DeltaSmelt" ~ O1_weight(),
+                                                                                                 Objective == "CVP_export" ~ O2_weight(),
+                                                                                                 Objective == "SWP_export" ~ O3_weight(),
+                                                                                                 Objective == "Redds_dewatered" ~ O4_weight(), 
+                                                                                                 Objective == "Folsom_probability300TAF" ~ O5_weight(),
+                                                                                                 Objective == "DeltaHumanHealth" ~ O6_weight(),
+                                                                                                 Objective == "Shasta_storage" ~ O7_weight(),
+                                                                                                 Objective == "Oroville_storage" ~ O8_weight()))  %>%
+            mutate(composite_score = Value*obj_weight) %>%
+            group_by(Alternative,Hydrology) %>%
+            summarise(composite_score = sum(composite_score)) %>%
             mutate(hypo_weight = case_when(Hydrology == "AdjustedHist" ~ input$H1_weight,
-                                           Hydrology == "2022MED" ~ 1-input$H1_weight)) %>%
-            dplyr::select(Alternative, Hypothesis, Objective, Value, hypo_weight) %>% 
-            spread(Objective, Value) %>% 
-            mutate(composite_score = (DeltaSmelt * input$fish_weight) + (WaterCost * (1 - input$fish_weight))) })
-    
+                                           Hydrology == "2022MED" ~ 1-input$H1_weight))})
+            
     certainty_calc <- reactive({ cons_table_reconfig() %>% 
-            group_by(Hypothesis) %>% 
+            group_by(Hydrology) %>% 
             summarise(composite_score = max(composite_score), hypo_weight = mean(hypo_weight)) %>%
             mutate(hypothesis_score = composite_score * hypo_weight) })
     
     uncertainty_calc <- reactive({ cons_table_reconfig() %>% 
             mutate(composite_score_hypo = hypo_weight * composite_score) %>% 
-            group_by(Alternatives) %>% 
+            group_by(Alternative) %>% 
             summarise(composite_score = sum(composite_score_hypo)) })
     # Show text on VOI
     output$VOI_calc1 <- renderText({
-        paste("Value of Perfect Information (Composite Score):",round(sum(certainty_calc()$hypothesis_score)-max(uncertainty_calc()$composite_score),digits=3))
+        paste("Value of Perfect Information (Composite Score):",round(sum(certainty_calc()$hypothesis_score)-max(uncertainty_calc()$composite_score),digits=4))
     })
     output$VOI_calc2 <- renderText({
-        paste("Value of Perfect Information (% of Best composite Score):",paste(round((sum(certainty_calc()$hypothesis_score)-max(uncertainty_calc()$composite_score))/max(cons_table_std_new()$CompositeScore)*100,digits=3)),"%")
+        paste("Value of Perfect Information (% of Best composite Score):",paste(round((sum(certainty_calc()$hypothesis_score)-max(uncertainty_calc()$composite_score))/max(cons_table_std_new()$CompositeScore)*100,digits=4)),"%")
     })
     
     # Show table for swing weighting
@@ -187,8 +199,8 @@ server <- function(input, output, session) {
     })
     # Show warning if the hypothesis weight number exceeds 1
     output$warning <- renderUI({
-        if (!all.equal(1,input$O1_weight+input$O2_weight+input$O3_weight+input$O4_weight+input$O5_weight+input$O6_weight+input$O7_weight+input$O8_weight)) {
-            tags$div(style = "color: red;", "Warning: The total objective weights do not add up to 1!")
+        if ((input$O1_score+input$O2_score+input$O3_score+input$O4_score+input$O5_score+input$O6_score+input$O7_score+input$O8_score)<=0) {
+            tags$div(style = "color: red;", "Warning: Score need to be >0 for at least one objective")
         }
     })
     
@@ -229,6 +241,10 @@ server <- function(input, output, session) {
     
     # Raw consequence table
     output$tableRaw <- renderTable(consequence_table)
+    # Normalized consequence table
+    output$tableNormal <- renderTable({consequence_table_std},digits=4)
+    # Summary of Objective Weights
+    output$tableObjWeights <- renderTable({data.frame(Objective=c("Delta Smelt Persistence","CVP Export","SWP Export","Winter-run: Redds dewatered","Fall-run/Steelhead: Folsom","Delta Water Quality","CVP Coldwater Pool (Shasta)","SWP Coldwater Pool (Oroville)"),Weight=c(O1_weight(),O2_weight(),O3_weight(),O4_weight(),O5_weight(),O6_weight(),O7_weight(),O8_weight()))},digits=4)
 }
 
 # Run the application 
