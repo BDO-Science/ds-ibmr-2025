@@ -9,8 +9,8 @@ library(purrr)
 rm(list=ls(all=TRUE))
 
 # change this depending on which output used
-output_path <- here::here("output/model_outputs/outputs_AdjHist")
-#output_path <- here::here("output/model_outputs/outputs_2022MED")
+#output_path <- here::here("output/model_outputs/outputs_AdjHist")
+output_path <- here::here("output/model_outputs/outputs_2022MED")
 
 # Read all files and filter to rds files
 fp_abund <- dir(here(output_path), full.names = TRUE)
@@ -71,7 +71,30 @@ min_abundance_table <- data.frame(Alternatives=
                                     mean(get_column_minimum(ls_abund[["Summer_Even_AltSMSCG"]]),na.rm=T),
                                     mean(get_column_minimum(ls_abund[["SummerFall_Hist"]]),na.rm=T),
                                     mean(get_column_minimum(ls_abund[["Summer_Hist"]]),na.rm=T)
-                                    ))
+                                    ),
+                                  MinAbundance_05= c(quantile(get_column_minimum(ls_abund[["StatusQuo"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["June"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["MaxWater"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["MaxWater_noSMSCG"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["MaxDS_Even"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["MaxDS_Hist"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["SummerFall_Even"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["Summer_Even"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["Summer_Even_AltSMSCG"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["SummerFall_Hist"]]), 0.05, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["Summer_Hist"]]), 0.05, na.rm = TRUE)),
+                                  MaxAbundance_95= c(quantile(get_column_minimum(ls_abund[["StatusQuo"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["June"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["MaxWater"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["MaxWater_noSMSCG"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["MaxDS_Even"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["MaxDS_Hist"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["SummerFall_Even"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["Summer_Even"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["Summer_Even_AltSMSCG"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["SummerFall_Hist"]]), 0.95, na.rm = TRUE),
+                                                     quantile(get_column_minimum(ls_abund[["Summer_Hist"]]), 0.95, na.rm = TRUE)))
+
 
 
 
@@ -87,7 +110,7 @@ min_abundance_table$lambda <- lambda_vals$lambdaval
 summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
 
 # Export out results as csv
-write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
+#write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
 #write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
 
 
@@ -99,8 +122,8 @@ min_abundance_table$lambda <- lambda_vals2$lambdaval
 summary(lm(min_abundance_table$lambda~min_abundance_table$MeanMinAbundance))
 
 # Export out results as csv
-# write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
-#write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
+#write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_AdjHist.csv"))
+write_csv(min_abundance_table, file.path(output_path, "../summarized_output/abundance_meanmin_all_alts_2022MED.csv"))
 
 
 
