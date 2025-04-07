@@ -13,6 +13,7 @@ library(tidyverse)
 library(rsconnect)
 
 # Load data
+
 consequence_table <-read.csv("ConsequenceTable_2025-03-19.csv")
 # Standardize
 consequence_table_std <- consequence_table %>%
