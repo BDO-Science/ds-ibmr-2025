@@ -9,7 +9,6 @@ library(readr)
 library(ggplot2)
 library(tidyr)
 library(here)
-library(map)
 
 # Filepaths
 output_path <- here::here("output/model_outputs/")
