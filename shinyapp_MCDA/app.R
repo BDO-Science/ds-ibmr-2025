@@ -1,17 +1,7 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
-
 library(shiny)
 library(tidyverse)
 library(rsconnect)
-
+library(viridis)
 # Load data
 
 consequence_table <-read.csv("ConsequenceTable_2025-03-19.csv")
@@ -45,7 +35,32 @@ consequence_table_std_long <- consequence_table_std %>%
 ui <- fluidPage(
     
     # Application title
-    titlePanel("2025 Summer-Fall Habitat Action SDM"),
+    titlePanel(
+      # Logo
+      title = div(
+        # logo
+        style = "display: flex; align-items: center; justify-content: space-between;",
+        a(img(src = "USBR_logo_oct_2019.jpg", height = 80, style = "margin-right: 20px;"),
+          href = "http://www.usbr.gov"),
+        # title
+        div(
+          style = "flex-grow: 1;",
+          h2("2025 Summer-Fall Habitat Action SDM",
+             style = "font-family:Segoe UI Semibold; font-size: 34px"),
+          h4("Version 1.0.0", style = "font-size: 14px; font-style: italic"),
+          tags$hr(style = "border-top: 1px solid #0a7e8c; margin-top: 10px; margin-bottom: 10px;opacity: 0.7"),
+          # links and contact
+          h5("Code associated with SDM effort available at: ", 
+             a("https://github.com/BDO-Science/ds-ibmr-2025", href="https://github.com/BDO-Science/ds-ibmr-2025")),
+          h5("Preliminary results for SDM effort available at: ", 
+             a("Delta Smelt Summer-Fall Habitat Action SDM Results", href="https://www.researchgate.net/publication/390212804_Structured_Decision_Making_for_Delta_Smelt_Summer-Fall_Habitat_Actions_Multi-criteria_Decision_Analysis_Results")),
+          h5(uiOutput("contact"))
+          
+        )
+      ),
+      windowTitle = "2025 Summer-Fall Habitat Action SDM"),
+    tags$hr(style = "border-top: 3px solid #0a7e8c; margin-top: 10px; margin-bottom: 20px; opacity: 0.9"),
+      
     
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
@@ -70,7 +85,7 @@ ui <- fluidPage(
             h3("Hypothesis Information"),
             p("Hypothesis 1: Adjust historical hydrology"),
             p("Hypothesis 2: Climate change adjusted hydrology based on 2022 median"),
-            HTML("<strong>Note:</strong> Actions would only occur in W or AN years. Old and Middle River + Suisun Marsh Salinity Control Gate actions are present across all alternatives unless noted otherwise.")
+            HTML("<strong>Note:</strong> Actions would only occur in Wet (W) or Above Normal (AN) years. Old and Middle River + Suisun Marsh Salinity Control Gate actions are present across all alternatives unless noted otherwise.")
         ),
         
         # Show a plot of the generated distribution
@@ -119,6 +134,14 @@ ui <- fluidPage(
 
 # Define server logic required to do things
 server <- function(input, output, session) {
+  
+    # Contact Info
+    contacturl <- a("bmahardja@usbr.gov", href="mailto:bmahardja@usbr.gov")
+    output$contact <- renderUI({
+    tagList(p(HTML("For questions or comments, please contact: <span style='font-weight: bold;'>Brian Mahardja | </span>"), 
+              contacturl, style = "font-size: 14px"))
+    })
+  
     #Reactive objective weight
     O1_weight <- reactive({input$O1_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
     O2_weight <- reactive({input$O2_score/(input$O1_score + input$O2_score + input$O3_score + input$O4_score + input$O5_score + input$O6_score + input$O7_score + input$O8_score)})
@@ -148,11 +171,12 @@ server <- function(input, output, session) {
         #Plot here
         print(ggplot(data=line_plot_data(), aes(x=Hypo_weight, y=comp_score, color=Alternative,linetype=Alternative)) +
                   geom_line(linewidth= 1.2) +
-                  geom_vline(xintercept = input$H1_weight, linetype="dotted", color = "red", size=1) +
+                  geom_vline(xintercept = input$H1_weight, linetype="dotted", color = "red", linewidth=1) +
                   theme_minimal()+
                   labs(title = NULL,
                        x = "Hypothesis 1 weight",
                        y = "Composite score (objective-weighted linear value function)") +
+                scale_color_viridis(option = "turbo", discrete = TRUE) + 
                   theme(axis.text = element_text(size = 14),  # Increase tick mark font size
                         panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
                         legend.text=element_text(size=14),
